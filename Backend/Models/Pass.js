@@ -36,7 +36,11 @@ const passSchema = new mongoose.Schema({
     },
     expiresAt: {
         type: Date,
-        required: true
+        default: () => {
+            const d = new Date();
+            d.setHours(23, 59, 59, 999);
+            return d;
+        }
     },
     status: {
         type: String,
@@ -45,8 +49,5 @@ const passSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-// Auto-expire indexing (MongoDB will automatically delete or you can just query)
-passSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 }); 
-passSchema.index({ passCode: 1 });
 
 module.exports = mongoose.model('Pass', passSchema);

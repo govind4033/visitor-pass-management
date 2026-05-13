@@ -18,7 +18,9 @@ const userSchema = new Schema({
 }, { timestamps: true });
 
 // Static Signup Method
-userSchema.statics.signup = async function (name, email, password, role) {
+userSchema.statics.signup = async function (data) {
+    const { name, email, password, role } = data;
+
     // 1. Validation
     if (!email || !password || !name) {
         throw Error('All fields must be filled');
@@ -63,4 +65,4 @@ userSchema.statics.login = async function (email, password) {
     return user;
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.models.User || mongoose.model("User", userSchema);
