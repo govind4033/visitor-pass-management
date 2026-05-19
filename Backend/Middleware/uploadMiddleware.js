@@ -1,17 +1,20 @@
 const multer = require('multer');
-const path   = require('path');
+const path = require('path');
 
+// we will store images on local folder
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, process.env.UPLOAD_PATH || './uploads');
   },
+  // get extention and file name then save by callback function
   filename: (req, file, cb) => {
-    const ext  = path.extname(file.originalname);
+    const ext = path.extname(file.originalname);
     const name = `visitor_${Date.now()}${ext}`;
     cb(null, name);
   }
 });
 
+// check photo type allowed or not
 const fileFilter = (req, file, cb) => {
   const allowed = ['image/jpeg', 'image/png', 'image/webp'];
   allowed.includes(file.mimetype)

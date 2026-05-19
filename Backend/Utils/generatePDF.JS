@@ -5,6 +5,7 @@ const path = require('path');
 const generatePDF = (visitor, code, qrFile) => {
   return new Promise((resolve, reject) => {
 
+    // set pdf name create pdf set folder where it is going to stored
     const file = `pass_${code}.pdf`;
     const doc = new PDFDocument();
     const stream = fs.createWriteStream(
@@ -16,7 +17,7 @@ const generatePDF = (visitor, code, qrFile) => {
     // Title
     doc.text("VISITOR PASS");
 
-    // Basic info
+    // Print visitor info
     doc.text(visitor.name);
     doc.text(visitor.company );
     doc.text(visitor.purpose );

@@ -17,17 +17,19 @@ const userSchema = new Schema({
     isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
-// Static Signup Method
+// Static signup method
 userSchema.statics.signup = async function (data) {
     const { name, email, password, role } = data;
 
-    // 1. Validation
+    // Validate all
     if (!email || !password || !name) {
         throw Error('All fields must be filled');
     }
+    // Email validate through validator
     if (!validator.isEmail(email)) {
         throw Error('Email is not valid');
     }
+    // Password strongness check by validator
     if (!validator.isStrongPassword(password)) {
         throw Error('Password not strong enough (Need: 8+ chars, Uppercase, Lowercase, Number, Symbol)');
     }
@@ -37,26 +39,29 @@ userSchema.statics.signup = async function (data) {
         throw Error('Email already in use');
     }
 
-    // 2. Hashing
+    // Hashing
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    // 3. Create User
+    // Create user
     const user = await this.create({ name, email, password: hash, role });
     return user;
 };
 
 // Static Login Method
 userSchema.statics.login = async function (email, password) {
+    // check
     if (!email || !password) {
         throw Error('All fields must be filled');
     }
 
+    // find
     const user = await this.findOne({ email });
     if (!user) {
         throw Error('Incorrect email');
     }
 
+    // match
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
         throw Error('Incorrect password');
@@ -65,4 +70,5 @@ userSchema.statics.login = async function (email, password) {
     return user;
 };
 
+// if model already created then use it otherwise create 
 module.exports = mongoose.models.User || mongoose.model("User", userSchema);

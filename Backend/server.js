@@ -6,6 +6,7 @@ const passRoutes = require('./Routes/passRoutes');
 const visitorRoutes = require('./Routes/visitorRoutes');
 const authRoutes = require("./Routes/authRoutes");
 const checkRoutes = require("./Routes/checkRoutes");
+const reportRoutes = require('./Routes/reportRoutes');
 
 // import express, cors and morgan for method logs
 const express = require("express");
@@ -14,6 +15,7 @@ const morgan  = require('morgan');
 
 // import dbconnection from config folder where we have setuped the connection
 const DBconnection = require("./Config/db");
+const { testEmail } = require("./Utils/sendEmail");
 
 // use express by app variable
 const app = express();
@@ -36,6 +38,21 @@ app.get("/", (req, res) => {
     res.send("Server working");
 });
 
+// test email setup
+app.get('/test-email', async (req, res) => {
+    try {
+        await testEmail();
+
+        res.json({
+        message: 'Email sent successfully'
+        });
+    } catch (err) {
+        res.status(500).json({
+        message: err.message
+        });
+    }
+});
+
 //Routes for auth visitor and passes
 app.use("/api/auth", authRoutes);
 
@@ -44,6 +61,8 @@ app.use('/api/visitors', visitorRoutes);
 app.use('/api/passes', passRoutes);
 
 app.use("/api/check", checkRoutes);
+
+app.use('/api/reports', reportRoutes);
 
 
 // Global error handler

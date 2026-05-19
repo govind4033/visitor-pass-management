@@ -1,17 +1,23 @@
 const Visitor = require('../Models/Visitor');
 
 
-// CREATE
+// Create visitor
 exports.createVisitor = async (req, res) => {
   try {
-    const visitorData = {
-      ...req.body,
+    const visitor = await Visitor.create({
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      company: req.body.company,
+      purpose: req.body.purpose,
+      hostEmployee: req.body.hostEmployee,
+      visitDate: req.body.visitDate,
+      // if uploaded
       photo: req.file ? req.file.filename : null,
+      // by whom like admin, security or employee
       registeredBy: req.user._id,
-      status: 'pre-registered'
-    };
-
-    const visitor = await Visitor.create(visitorData);
+      status: "pre-registered"
+    });
 
     res.status(201).json({ visitor });
 
@@ -20,7 +26,7 @@ exports.createVisitor = async (req, res) => {
   }
 };
 
-// GET ALL VISITOR
+// Get all visitors
 exports.getAllVisitors = async (req, res) => {
   try {
     const { search, status } = req.query;
@@ -29,12 +35,10 @@ exports.getAllVisitors = async (req, res) => {
 
     // search by name/email
     if (search) {
-      query = {
-        $or: [
-          { name: new RegExp(search, 'i') },
-          { email: new RegExp(search, 'i') }
-        ]
-      };
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ];
     }
 
     if (status) {
@@ -53,7 +57,7 @@ exports.getAllVisitors = async (req, res) => {
   }
 };
 
-// GET VISITOR BY ID
+// Get visitor by id
 exports.getVisitor = async (req, res) => {
   try {
     const visitor = await Visitor.findById(req.params.id)
@@ -70,11 +74,12 @@ exports.getVisitor = async (req, res) => {
   }
 };
 
-// UPDATE
+// Update visitor
 exports.updateVisitor = async (req, res) => {
   try {
     const updates = { ...req.body };
 
+    // access photo
     if (req.file) {
       updates.photo = req.file.filename;
     }
@@ -99,7 +104,7 @@ exports.updateVisitor = async (req, res) => {
   }
 };
 
-// DELETE
+// Delete visitor
 exports.deleteVisitor = async (req, res) => {
   try {
     const visitor = await Visitor.findByIdAndDelete(req.params.id);

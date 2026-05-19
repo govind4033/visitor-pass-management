@@ -1,22 +1,24 @@
 const Pass = require('../models/Pass');
 const Visitor = require('../models/Visitor');
 const CheckLog = require('../models/CheckLog');
+const { sendCheckinAlert } = require('../Utils/sendEmail');
 
 exports.checkIn = async (req, res) => {
     const pass = await Pass.findOne({ passCode: req.body.passCode }).populate('visitor');
 
+    // Empty check
     if (!pass) return res.status(404).json({ msg: "Invalid pass" });
 
-    if (pass.status !== "active")
-        return res.status(400).json({ msg: "Pass not active" });
+    // Active pass check
+    if (pass.status !== "active") return res.status(400).json({ msg: "Pass not active" });
 
-    if (new Date() > pass.expiresAt)
-        return res.status(400).json({ msg: "Pass expired" });
+    // Expiry date check
+    if (new Date() > pass.expiresAt) return res.status(400).json({ msg: "Pass expired" });
 
     const last = await CheckLog.findOne({ pass: pass._id }).sort({ createdAt: -1 });
 
-    if (last?.type === "check-in")
-        return res.status(400).json({ msg: "Already inside" });
+    // Already used or not
+    if (last?.type === "check-in") return res.status(400).json({ msg: "Already checked in" });
 
     const log = await CheckLog.create({
         pass: pass._id,
@@ -26,7 +28,14 @@ exports.checkIn = async (req, res) => {
         location: req.body.location || "Main Gate"
     });
 
+    // Update
     await Visitor.findByIdAndUpdate(pass.visitor._id, { status: "checked-in" });
+
+    const visitor = pass.visitor;
+    const host = await User.findById(visitor.hostEmployee); 
+
+    // Send email
+    await sendCheckinAlert(host, visitor);
 
     res.json({ msg: "Check-in success", log });
 };
@@ -63,7 +72,8 @@ exports.getLogs = async (req, res) => {
     const { date, type, page = 1, limit = 50 } = req.query;
     const query = {};
 
-    if (type) query.type = type; // 'check-in' or 'check-out'
+    // check-in or check-out
+    if (type) query.type = type;
 
     if (date) {
         const start = new Date(date); start.setHours(0,0,0,0);
@@ -83,12 +93,11 @@ exports.getLogs = async (req, res) => {
 
 exports.getPassLogs = async (req, res) => {
 
-  const logs = await CheckLog.find({
-    pass: req.params.passId
-  })
-    .populate('visitor', 'name')
-    .populate('scannedBy', 'name')
-    .sort({ createdAt: -1 });
+    const logs = await CheckLog.find({
+        pass: req.params.passId
+    }).populate('visitor', 'name')
+        .populate('scannedBy', 'name')
+        .sort({ createdAt: -1 });
 
-  res.json(logs);
+    res.json(logs);
 };

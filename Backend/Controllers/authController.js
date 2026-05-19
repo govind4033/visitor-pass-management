@@ -30,22 +30,27 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     const { email, password } = req.body
 
+    // verify
     if(!email || !password){
         return res.status(400).json({ message: "Email and Password required" })
     }
 
+    // find
     const user = await User.findOne({email}).select("+password");
     if (!user) {
         return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // match
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
         return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // expired
     if (!user.isActive) return res.status(403).json({ message: 'Account deactivated' });
 
+    // create token
     const token = signToken(user._id)
     res.json({ token, user: { id: user._id, name: user.name, email, role: user.role } })
 }

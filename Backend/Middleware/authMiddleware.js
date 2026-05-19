@@ -10,11 +10,16 @@ exports.protect = async (req, res, next) => {
             return res.status(401).json({ message: 'No token provided' });
         }
 
+        // remove bearer
         const token = authHeader.split(' ')[1];
 
+        // verify
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+        // find
         const user = await User.findById(decoded.id);
+
+        // testing purpose
         console.log("TOKEN:", token);
         console.log("USER:", decoded);
 

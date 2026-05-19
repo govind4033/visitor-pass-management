@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 
 const passSchema = new mongoose.Schema({
+    // take object id from visitor schema whose pass is going to be generated
     visitor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Visitor',
         required: [true, 'Pass must be linked to a visitor']
     },
+    // it's optional according to hostemployee if it's a ceo then required if for employee no need
     appointment: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Appointment',
@@ -25,6 +27,7 @@ const passSchema = new mongoose.Schema({
     pdfUrl: {
         type: String
     },
+    // who issued the pass Admin or Security 
     issuedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -50,4 +53,4 @@ const passSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 
-module.exports = mongoose.model('Pass', passSchema);
+module.exports = mongoose.models.Pass || mongoose.model('Pass', passSchema);

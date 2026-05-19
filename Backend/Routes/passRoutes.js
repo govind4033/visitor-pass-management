@@ -9,4 +9,13 @@ router.use(protect);
 // issue pass (security only)
 router.post('/', authorize('admin', 'security'), issuePass);
 
+// 1. admin or security issue Pass
+// 2. finds visitor
+// 3. checks duplicate active pass if exit
+// 4. creates pass
+// 5. generates QR
+// 6. generates PDF
+// 7. store on mongoDB
+// 8. return download link to download pass
+
 module.exports = router;

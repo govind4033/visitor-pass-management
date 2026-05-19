@@ -6,19 +6,19 @@ const upload = require("../Middleware/uploadMiddleware");
 // all routes protected
 router.use(protect);
 
-// GET all visitors
+// Get all visitors
 router.get('/', authorize('admin', 'security'), getAllVisitors);
 
-// CREATE visitor (with photo upload)
+// Create visitor (with photo upload)
 router.post('/', authorize('admin', 'security', 'employee'), upload.single('photo'), createVisitor);
 
-// GET single visitor
+// Get single visitor by id
 router.get('/:id', authorize('admin', 'security', 'employee'), getVisitor);
 
-// UPDATE visitor
+// Update visitor
 router.patch( '/:id', authorize('admin', 'security'), upload.single('photo'), updateVisitor);
 
-// DELETE visitor
+// Delete visitor
 router.delete('/:id', authorize('admin'), deleteVisitor);
 
 module.exports = router;

@@ -37,6 +37,7 @@ const appointmentSchema = new mongoose.Schema(
       default: "pending",
     },
 
+    // by admin or employee
     approvedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -46,11 +47,13 @@ const appointmentSchema = new mongoose.Schema(
       type: Date,
     },
 
+    // any discription optional
     notes: {
       type: String,
       trim: true,
     },
 
+    // emailed or not
     notified: {
       type: Boolean,
       default: false,
