@@ -1,4 +1,4 @@
-const Appointment = require('../Models/Appointmnet');
+const Appointment = require('../Models/Appointment');
 const Visitor = require('../Models/Visitor');
 const sendEmail = require('../Utils/sendEmail');
 const { sendSMS } = require('../Utils/sendSMS');
