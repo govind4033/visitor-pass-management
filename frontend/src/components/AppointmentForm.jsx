@@ -13,6 +13,17 @@ export default function AppointmentForm({
         notes: ''
     });
 
+
+    // =========================
+    // reusable input style
+    // =========================
+    const inputStyle =
+        'w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400';
+
+
+    // =========================
+    // handle input
+    // =========================
     const handleChange = (e) => {
 
         setFormData({
@@ -21,6 +32,10 @@ export default function AppointmentForm({
         });
     };
 
+
+    // =========================
+    // submit form
+    // =========================
     const handleSubmit = (e) => {
 
         e.preventDefault();
@@ -36,13 +51,15 @@ export default function AppointmentForm({
         });
     };
 
+
     return (
 
-        <div className="bg-white rounded-3xl shadow-lg p-6 border border-gray-100">
+        <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-6">
 
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
                 Create Appointment
             </h2>
+
 
             <form
                 onSubmit={handleSubmit}
@@ -61,14 +78,16 @@ export default function AppointmentForm({
                         value={formData.visitor}
                         onChange={handleChange}
                         required
-                        className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400"
+                        className={inputStyle}
                     >
+
                         <option value="">
                             Choose Visitor
                         </option>
 
                         {
                             visitors.map((visitor) => (
+
                                 <option
                                     key={visitor._id}
                                     value={visitor._id}
@@ -77,11 +96,13 @@ export default function AppointmentForm({
                                 </option>
                             ))
                         }
+
                     </select>
+
                 </div>
 
 
-                {/* date and time */}
+                {/* datetime */}
                 <div>
 
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -94,8 +115,9 @@ export default function AppointmentForm({
                         value={formData.scheduledAt}
                         onChange={handleChange}
                         required
-                        className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400"
+                        className={inputStyle}
                     />
+
                 </div>
 
 
@@ -113,8 +135,9 @@ export default function AppointmentForm({
                         value={formData.purpose}
                         onChange={handleChange}
                         required
-                        className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400"
+                        className={inputStyle}
                     />
+
                 </div>
 
 
@@ -131,8 +154,9 @@ export default function AppointmentForm({
                         placeholder="Additional notes..."
                         value={formData.notes}
                         onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+                        className={`${inputStyle} resize-none`}
                     />
+
                 </div>
 
 
@@ -142,11 +166,13 @@ export default function AppointmentForm({
                     disabled={loading}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl font-semibold transition"
                 >
+
                     {
                         loading
-                        ? 'Creating...'
-                        : 'Create Appointment'
+                            ? 'Creating...'
+                            : 'Create Appointment'
                     }
+
                 </button>
 
             </form>

@@ -16,7 +16,7 @@ export const createVisitor = async (data) => {
 };
 
 export const updateVisitor = async (id, data) => {
-  const res = await api.put(`/visitors/${id}`, data);
+  const res = await api.patch(`/visitors/${id}`, data);
   return res.data;
 };
 

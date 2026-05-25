@@ -1,8 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+
 import { AuthContextProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
 
+// layout
+import DashboardLayout from './components/layout/DashboardLayout';
 
 // pages
 import Login from './pages/Login';
@@ -11,97 +14,99 @@ import Dashboard from './pages/Dashboard';
 import Visitors from './pages/Visitors';
 import NewVisitor from './pages/NewVisitor';
 import Appointments from './pages/Appointments';
-import PassView from './pages/PassView';
 import CheckIn from './pages/CheckIn';
+import Reports from './pages/Reports';
+import Passes from './pages/Passes';
+import PassView from './components/PassView';
+import EditVisitor from './pages/EditVisitor';
 
 export default function App() {
-
   return (
     <AuthContextProvider>
       <BrowserRouter>
         <Toaster position="top-right" />
+
         <Routes>
 
-          {/* public routes */}
-          <Route
-            path="/login"
-            element={<Login />}
-          />
+          {/* PUBLIC ROUTES */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Navigate to="/dashboard" />} />
 
+          {/* DASHBOARD LAYOUT + PROTECTED ROUTES */}
           <Route
-            path="/register"
-            element={<Register />}
-          />
-
-          <Route
-            path="/"
-            element={<Navigate to="/dashboard" />}
-          />
-
-
-          {/* protected routes */}
-          <Route
-            path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <DashboardLayout />
               </ProtectedRoute>
             }
-          />
+          >
 
+            {/* dashboard */}
+            <Route path="/dashboard" element={<Dashboard />} />
 
-          <Route
-            path="/appointments"
-            element={
-              <ProtectedRoute>
-                <Appointments />
-              </ProtectedRoute>
-            }
-          />
+            {/* appointments */}
+            <Route path="/appointments" element={<Appointments />} />
 
+            {/* pass view */}
+            <Route path="/passes" element={<Passes />} />
+            <Route path="/passes/:id" element={<PassView />} />
 
-          <Route
-            path="/passes/:id"
-            element={
-              <ProtectedRoute>
-                <PassView />
-              </ProtectedRoute>
-            }
-          />
+            {/* visitors */}
+            <Route
+              path="/visitors"
+              element={
+                <ProtectedRoute roles={['admin', 'security']}>
+                  <Visitors />
+                </ProtectedRoute>
+              }
+            />
 
+            {/* new visitor */}
+            <Route
+              path="/visitors/new"
+              element={
+                <ProtectedRoute
+                  roles={['admin', 'security', 'employee']}
+                >
+                  <NewVisitor />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* admin + security */}
-          <Route
-            path="/visitors"
-            element={
-              <ProtectedRoute roles={['admin', 'security']}>
-                <Visitors />
-              </ProtectedRoute>
-            }
-          />
+            {/* edit visitor */}
+            <Route
+              path="/visitors/edit/:id"
+              element={
+                <ProtectedRoute
+                  roles={['admin', 'security', 'employee']}
+                >
+                  <EditVisitor />
+                </ProtectedRoute>
+              }
+            />
 
+            {/* check-in */}
+            <Route
+              path="/checkin"
+              element={
+                <ProtectedRoute roles={['admin', 'security']}>
+                  <CheckIn />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* all roles */}
-          <Route
-            path="/visitors/new"
-            element={
-              <ProtectedRoute
-                roles={['admin', 'security', 'employee']}
-              >
-                <NewVisitor />
-              </ProtectedRoute>
-            }
-          />
+            {/* reports */}
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute roles={['admin']}>
+                  <Reports />
+                </ProtectedRoute>
+              }
+            />
 
-
-          <Route
-            path="/checkin"
-            element={
-              <ProtectedRoute roles={['admin', 'security']}>
-                <CheckIn />
-              </ProtectedRoute>
-            }
-          />
+          </Route>
 
         </Routes>
       </BrowserRouter>

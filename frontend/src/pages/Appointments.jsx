@@ -16,33 +16,54 @@ import {
 
 import { getVisitors } from '../api/visitorApi';
 
+
 export default function Appointments() {
 
     const { user } = useAuth();
 
     const [appointments, setAppointments] = useState([]);
+
     const [visitors, setVisitors] = useState([]);
 
     const [loading, setLoading] = useState(false);
 
 
+    // ====================================
+    // update appointment in state
+    // ====================================
+    const updateAppointment = (updatedData) => {
+
+        setAppointments((prev) =>
+            prev.map((item) =>
+                item._id === updatedData._id
+                    ? updatedData
+                    : item
+            )
+        );
+    };
+
+
+    // ====================================
     // fetch appointments
+    // ====================================
     const fetchAppointments = async () => {
 
         try {
 
             const data = await getAppointments();
 
-            setAppointments(data);
+            setAppointments(data.appointments);
 
-        } catch (err) {
+        } catch (error) {
 
-            console.error(err);
+            console.error(error);
         }
     };
 
 
+    // ====================================
     // fetch visitors
+    // ====================================
     const fetchVisitors = async () => {
 
         try {
@@ -51,14 +72,16 @@ export default function Appointments() {
 
             setVisitors(data);
 
-        } catch (err) {
+        } catch (error) {
 
-            console.error(err);
+            console.error(error);
         }
     };
 
 
+    // ====================================
     // create appointment
+    // ====================================
     const handleCreate = async (formData) => {
 
         try {
@@ -73,12 +96,10 @@ export default function Appointments() {
                 ...prev
             ]);
 
-        } catch (err) {
-
-            console.error(err);
+        } catch (error) {
 
             alert(
-                err.response?.data?.message ||
+                error.response?.data?.message ||
                 'Failed to create appointment'
             );
 
@@ -89,7 +110,9 @@ export default function Appointments() {
     };
 
 
-    // approve
+    // ====================================
+    // approve appointment
+    // ====================================
     const handleApprove = async (id) => {
 
         try {
@@ -97,22 +120,18 @@ export default function Appointments() {
             const updated =
                 await approveAppointment(id);
 
-            setAppointments((prev) =>
-                prev.map((item) =>
-                    item._id === id
-                    ? updated
-                    : item
-                )
-            );
+            updateAppointment(updated);
 
-        } catch (err) {
+        } catch (error) {
 
-            console.error(err);
+            console.error(error);
         }
     };
 
 
-    // reject
+    // ====================================
+    // reject appointment
+    // ====================================
     const handleReject = async (id) => {
 
         try {
@@ -120,22 +139,18 @@ export default function Appointments() {
             const updated =
                 await rejectAppointment(id);
 
-            setAppointments((prev) =>
-                prev.map((item) =>
-                    item._id === id
-                    ? updated
-                    : item
-                )
-            );
+            updateAppointment(updated);
 
-        } catch (err) {
+        } catch (error) {
 
-            console.error(err);
+            console.error(error);
         }
     };
 
 
-    // cancel
+    // ====================================
+    // cancel appointment
+    // ====================================
     const handleCancel = async (id) => {
 
         try {
@@ -143,22 +158,18 @@ export default function Appointments() {
             const updated =
                 await cancelAppointment(id);
 
-            setAppointments((prev) =>
-                prev.map((item) =>
-                    item._id === id
-                    ? updated
-                    : item
-                )
-            );
+            updateAppointment(updated);
 
-        } catch (err) {
+        } catch (error) {
 
-            console.error(err);
+            console.error(error);
         }
     };
 
 
-    // complete
+    // ====================================
+    // complete appointment
+    // ====================================
     const handleComplete = async (id) => {
 
         try {
@@ -166,25 +177,22 @@ export default function Appointments() {
             const updated =
                 await completeAppointment(id);
 
-            setAppointments((prev) =>
-                prev.map((item) =>
-                    item._id === id
-                    ? updated
-                    : item
-                )
-            );
+            updateAppointment(updated);
 
-        } catch (err) {
+        } catch (error) {
 
-            console.error(err);
+            console.error(error);
         }
     };
 
 
+    // ====================================
     // initial fetch
+    // ====================================
     useEffect(() => {
 
         fetchAppointments();
+
         fetchVisitors();
 
     }, []);
@@ -208,7 +216,7 @@ export default function Appointments() {
             </div>
 
 
-            {/* create form */}
+            {/* appointment form */}
             {
                 user?.role === 'employee' && (
 
@@ -221,11 +229,19 @@ export default function Appointments() {
             }
 
 
-            {/* appointments list */}
+            {/* appointment cards */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {
-                    appointments.length > 0 ? (
+                    appointments.length === 0 ? (
+
+                        <div className="col-span-full bg-white rounded-3xl border border-gray-100 shadow-sm p-10 text-center text-gray-500">
+
+                            No appointments found
+
+                        </div>
+
+                    ) : (
 
                         appointments.map((appointment) => (
 
@@ -233,20 +249,18 @@ export default function Appointments() {
                                 key={appointment._id}
 
                                 appointment={appointment}
+
                                 user={user}
 
                                 onApprove={handleApprove}
+
                                 onReject={handleReject}
+
                                 onCancel={handleCancel}
+
                                 onComplete={handleComplete}
                             />
                         ))
-
-                    ) : (
-
-                        <div className="bg-white rounded-3xl p-10 text-center text-gray-500 shadow-sm border border-gray-100 col-span-full">
-                            No appointments found
-                        </div>
                     )
                 }
 

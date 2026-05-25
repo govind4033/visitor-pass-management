@@ -1,6 +1,5 @@
 import {
     CalendarDays,
-    Clock,
     FileText,
     User,
     StickyNote
@@ -15,6 +14,9 @@ export default function AppointmentCard({
     onComplete
 }) {
 
+    // =========================
+    // status colors
+    // =========================
     const statusColors = {
         pending: 'bg-yellow-100 text-yellow-700',
         approved: 'bg-green-100 text-green-700',
@@ -23,28 +25,41 @@ export default function AppointmentCard({
         cancelled: 'bg-gray-100 text-gray-700'
     };
 
+
+    // =========================
+    // formatted date
+    // =========================
     const formattedDate = new Date(
         appointment.scheduledAt
     ).toLocaleString();
 
+
+    // =========================
+    // reusable button style
+    // =========================
+    const buttonStyle =
+        'text-white px-4 py-2 rounded-xl font-medium transition';
+
+
     return (
 
-        <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6 space-y-5">
+        <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6">
 
-            {/* top */}
-            <div className="flex items-start justify-between">
+            {/* top section */}
+            <div className="flex items-start justify-between mb-6">
 
                 <div>
 
-                    <h3 className="text-xl font-bold text-gray-800">
+                    <h2 className="text-xl font-bold text-gray-800">
                         {appointment.visitor?.name}
-                    </h3>
+                    </h2>
 
                     <p className="text-sm text-gray-500">
                         Visitor Appointment
                     </p>
 
                 </div>
+
 
                 <span
                     className={`px-4 py-1 rounded-full text-sm font-semibold capitalize ${statusColors[appointment.status]}`}
@@ -55,29 +70,27 @@ export default function AppointmentCard({
             </div>
 
 
-            {/* info */}
-            <div className="space-y-3 text-gray-700">
+            {/* details */}
+            <div className="space-y-4 text-gray-700">
 
                 {/* host */}
                 <div className="flex items-center gap-3">
 
                     <User size={18} />
 
-                    <span>
+                    <p>
                         Host: {appointment.host?.name}
-                    </span>
+                    </p>
 
                 </div>
 
 
-                {/* datetime */}
+                {/* date */}
                 <div className="flex items-center gap-3">
 
                     <CalendarDays size={18} />
 
-                    <span>
-                        {formattedDate}
-                    </span>
+                    <p>{formattedDate}</p>
 
                 </div>
 
@@ -90,9 +103,7 @@ export default function AppointmentCard({
                         className="mt-1"
                     />
 
-                    <span>
-                        {appointment.purpose}
-                    </span>
+                    <p>{appointment.purpose}</p>
 
                 </div>
 
@@ -108,9 +119,7 @@ export default function AppointmentCard({
                                 className="mt-1"
                             />
 
-                            <span>
-                                {appointment.notes}
-                            </span>
+                            <p>{appointment.notes}</p>
 
                         </div>
                     )
@@ -120,24 +129,28 @@ export default function AppointmentCard({
 
 
             {/* actions */}
-            <div className="flex flex-wrap gap-3 pt-3">
+            <div className="flex flex-wrap gap-3 mt-6">
 
-                {/* admin / security */}
+                {/* approve reject */}
                 {
                     user?.role !== 'employee' &&
                     appointment.status === 'pending' && (
 
                         <>
                             <button
-                                onClick={() => onApprove(appointment._id)}
-                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-medium transition"
+                                onClick={() =>
+                                    onApprove(appointment._id)
+                                }
+                                className={`bg-green-600 hover:bg-green-700 ${buttonStyle}`}
                             >
                                 Approve
                             </button>
 
                             <button
-                                onClick={() => onReject(appointment._id)}
-                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-medium transition"
+                                onClick={() =>
+                                    onReject(appointment._id)
+                                }
+                                className={`bg-red-600 hover:bg-red-700 ${buttonStyle}`}
                             >
                                 Reject
                             </button>
@@ -152,8 +165,10 @@ export default function AppointmentCard({
                     appointment.status === 'approved' && (
 
                         <button
-                            onClick={() => onComplete(appointment._id)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium transition"
+                            onClick={() =>
+                                onComplete(appointment._id)
+                            }
+                            className={`bg-blue-600 hover:bg-blue-700 ${buttonStyle}`}
                         >
                             Complete
                         </button>
@@ -161,14 +176,18 @@ export default function AppointmentCard({
                 }
 
 
-                {/* employee cancel */}
+                {/* cancel */}
                 {
                     user?.role === 'employee' &&
-                    ['pending', 'approved'].includes(appointment.status) && (
+                    ['pending', 'approved'].includes(
+                        appointment.status
+                    ) && (
 
                         <button
-                            onClick={() => onCancel(appointment._id)}
-                            className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-xl font-medium transition"
+                            onClick={() =>
+                                onCancel(appointment._id)
+                            }
+                            className={`bg-gray-700 hover:bg-gray-800 ${buttonStyle}`}
                         >
                             Cancel
                         </button>

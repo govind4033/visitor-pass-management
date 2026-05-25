@@ -4,6 +4,8 @@ import { User, Mail, Lock, Eye, EyeOff, UserPlus} from 'lucide-react';
 
 import { Link, useNavigate } from 'react-router-dom';
 
+import { registerUser } from "../api/authApi";
+
 export default function Register() {
 
     const navigate = useNavigate();
@@ -52,7 +54,7 @@ export default function Register() {
 
             {/* icon */}
             <div className="w-20 h-20 bg-white rounded-3xl shadow-lg flex items-center justify-center mx-auto mb-8">
-            <UserPlus size={36} className="text-gray-700" />
+                <UserPlus size={36} className="text-gray-700" />
             </div>
 
             {/* heading */}

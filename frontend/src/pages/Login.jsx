@@ -55,7 +55,7 @@ export default function Login() {
 
         {/* heading */}
         <h1 className="text-4xl font-bold text-center text-gray-900">
-          Welcome Back
+          Welcome Back 
         </h1>
 
         <p className="text-gray-500 text-center mt-3 mb-10 text-lg">
