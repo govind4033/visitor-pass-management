@@ -39,6 +39,8 @@ app.get("/", (req, res) => {
     res.send("Server working");
 });
 
+app.use('/uploads', express.static('uploads'));
+
 // Test email setup
 app.get('/test-email', async (req, res) => {
     try {
@@ -57,7 +59,7 @@ app.get('/test-email', async (req, res) => {
 //Routes for auth, visitor, checklogs, reports, apointments and passes
 app.use('/api/auth', authRoutes);
 
-app.use('/appointments', appointmentsRoutes);
+app.use('/api/appointments', appointmentsRoutes);
 
 app.use('/api/visitors', visitorRoutes);
 

@@ -13,6 +13,7 @@ exports.issuePass = async (req, res) => {
     // get visitor
     const visitor = await Visitor.findById(req.body.visitorId);
     if (!visitor) return res.status(404).json({ msg: "Visitor not found" });
+    console.log("BODY:", req.body);
 
     // check today active pass
     const today = new Date();
@@ -45,7 +46,7 @@ exports.issuePass = async (req, res) => {
     });
 
     await sendSMS(
-      appointment.visitor.phone,
+      visitor.phone,
       'Your pass has been issued'
     );
 
@@ -59,6 +60,58 @@ exports.issuePass = async (req, res) => {
     res.status(201).json({
       pass,
       download: `/uploads/${pdf}`
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getPassById = async (req, res) => {
+  try {
+    const pass = await Pass.findById(req.params.id).populate('visitor');
+
+    if (!pass) {
+      return res.status(404).json({ msg: "Pass not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      pass
+    });
+
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(400).json({ msg: "Invalid Pass ID format" });
+    }
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getAllPasses = async (req, res) => {
+  try {
+    // 1. Setup pagination defaults (e.g., page 1, 10 items per page)
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // 2. Fetch passes with sorting, pagination, and visitor details
+    const passes = await Pass.find()
+      .populate('visitor')          // Brings in visitor data
+      .sort({ createdAt: -1 })      // Newest passes first
+      .skip(skip)
+      .limit(limit);
+
+    // 3. Get total count for frontend pagination controls
+    const totalPasses = await Pass.countDocuments();
+
+    // 4. Return response
+    res.status(200).json({
+      success: true,
+      count: passes.length,
+      totalPages: Math.ceil(totalPasses / limit),
+      currentPage: page,
+      passes
     });
 
   } catch (err) {

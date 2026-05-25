@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const { issuePass } = require('../Controllers/passController');
+const { issuePass, getPassById, getAllPasses } = require('../Controllers/passController');
 const { protect, authorize } = require('../Middleware/authMiddleware');
 
 // all routes require login
@@ -8,6 +8,11 @@ router.use(protect);
 
 // issue pass (security only)
 router.post('/', authorize('admin', 'security'), issuePass);
+
+router.get('/:id', authorize('admin', 'security'), getPassById);
+
+router.get('/', authorize('admin', 'security'), getAllPasses);
+
 
 // 1. admin or security issue Pass
 // 2. finds visitor
