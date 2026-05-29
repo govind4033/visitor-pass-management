@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from "../context/AuthContext";
-import { loginUser } from "../api/authApi";
+import { useAuth } from '../../context/AuthContext';
+import { loginUser } from '../../api/authApi';
 
 export default function Login() {
   const { dispatch } = useAuth();
@@ -27,7 +27,8 @@ export default function Login() {
           const data = await loginUser(formData);
           
           // Your backend unified payload returns: { success, token, role, user }
-          const { user, token, role } = data;
+          const { user, token } = data;
+          const role = user.role;
 
           // Commit to storage (including role info)
           localStorage.setItem('user', JSON.stringify(user));
@@ -40,19 +41,20 @@ export default function Login() {
               payload: { user, token, role }
           });
 
+
           // Role-Based Smart Navigation
           switch (role) {
             case 'admin':
-              navigate('/admin/AdminDashboard');
+              navigate('/admin');
               break;
             case 'security':
-              navigate('/security/SecurityDashboard');
+              navigate('/Security');
               break;
             case 'employee':
-              navigate('/employee/EmployeeDashboard');
+              navigate('/Employee');
               break;
             case 'visitor':
-              navigate('/visitor/VisitorDashboard');
+              navigate('/Visitor');
               break;
             default:
               navigate('/dashboard'); // fallback generic path

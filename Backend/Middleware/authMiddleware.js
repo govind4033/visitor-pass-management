@@ -19,10 +19,6 @@ exports.protect = async (req, res, next) => {
         // find
         const user = await User.findById(decoded.id);
 
-        // testing purpose
-        console.log("TOKEN:", token);
-        console.log("USER:", decoded);
-
         if (!user) {
             return res.status(401).json({ message: 'User not found' });
         }
@@ -38,7 +34,6 @@ exports.protect = async (req, res, next) => {
 // role based access control
 exports.authorize = (...roles) => {
     return (req, res, next) => {
-
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({
                 message: `Role '${req.user.role}' not allowed here`

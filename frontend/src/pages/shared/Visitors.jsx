@@ -7,9 +7,9 @@ import {
     Plus
 } from 'lucide-react';
 
-import VisitorCard from '../components/VisitorCard';
+import VisitorCard from '../../components/VisitorCard';
 
-import { deleteVisitor, getVisitors } from '../api/visitorApi';
+import { deleteVisitor, getVisitors } from '../../api/visitorApi';
 
 
 export default function Visitors() {

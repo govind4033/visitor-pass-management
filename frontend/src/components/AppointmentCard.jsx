@@ -1,201 +1,187 @@
 import {
-    CalendarDays,
-    FileText,
-    User,
-    StickyNote
-} from 'lucide-react';
+  CheckCircle,
+  XCircle,
+  Calendar,
+  Clock,
+  User,
+  FileText
+} from "lucide-react";
 
 export default function AppointmentCard({
-    appointment,
-    user,
-    onApprove,
-    onReject,
-    onCancel,
-    onComplete
+  appointment,
+  onApprove,
+  onReject,
+  onComplete,
+  processingId
 }) {
 
-    // =========================
-    // status colors
-    // =========================
-    const statusColors = {
-        pending: 'bg-yellow-100 text-yellow-700',
-        approved: 'bg-green-100 text-green-700',
-        rejected: 'bg-red-100 text-red-700',
-        completed: 'bg-blue-100 text-blue-700',
-        cancelled: 'bg-gray-100 text-gray-700'
-    };
+  const date = new Date(appointment.scheduledAt);
 
+  return (
 
-    // =========================
-    // formatted date
-    // =========================
-    const formattedDate = new Date(
-        appointment.scheduledAt
-    ).toLocaleString();
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
 
+      {/* top */}
+      <div className="flex items-start justify-between">
 
-    // =========================
-    // reusable button style
-    // =========================
-    const buttonStyle =
-        'text-white px-4 py-2 rounded-xl font-medium transition';
+        <div className="flex items-center gap-3">
 
+          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
 
-    return (
+            <User className="text-blue-600" size={20} />
 
-        <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6">
+          </div>
 
-            {/* top section */}
-            <div className="flex items-start justify-between mb-6">
+          <div>
 
-                <div>
+            <h2 className="font-bold text-gray-900 text-lg">
+              {appointment.visitor?.name}
+            </h2>
 
-                    <h2 className="text-xl font-bold text-gray-800">
-                        {appointment.visitor?.name}
-                    </h2>
+            <p className="text-sm text-gray-500">
+              {appointment.visitor?.phone}
+            </p>
 
-                    <p className="text-sm text-gray-500">
-                        Visitor Appointment
-                    </p>
-
-                </div>
-
-
-                <span
-                    className={`px-4 py-1 rounded-full text-sm font-semibold capitalize ${statusColors[appointment.status]}`}
-                >
-                    {appointment.status}
-                </span>
-
-            </div>
-
-
-            {/* details */}
-            <div className="space-y-4 text-gray-700">
-
-                {/* host */}
-                <div className="flex items-center gap-3">
-
-                    <User size={18} />
-
-                    <p>
-                        Host: {appointment.host?.name}
-                    </p>
-
-                </div>
-
-
-                {/* date */}
-                <div className="flex items-center gap-3">
-
-                    <CalendarDays size={18} />
-
-                    <p>{formattedDate}</p>
-
-                </div>
-
-
-                {/* purpose */}
-                <div className="flex items-start gap-3">
-
-                    <FileText
-                        size={18}
-                        className="mt-1"
-                    />
-
-                    <p>{appointment.purpose}</p>
-
-                </div>
-
-
-                {/* notes */}
-                {
-                    appointment.notes && (
-
-                        <div className="flex items-start gap-3">
-
-                            <StickyNote
-                                size={18}
-                                className="mt-1"
-                            />
-
-                            <p>{appointment.notes}</p>
-
-                        </div>
-                    )
-                }
-
-            </div>
-
-
-            {/* actions */}
-            <div className="flex flex-wrap gap-3 mt-6">
-
-                {/* approve reject */}
-                {
-                    user?.role !== 'employee' &&
-                    appointment.status === 'pending' && (
-
-                        <>
-                            <button
-                                onClick={() =>
-                                    onApprove(appointment._id)
-                                }
-                                className={`bg-green-600 hover:bg-green-700 ${buttonStyle}`}
-                            >
-                                Approve
-                            </button>
-
-                            <button
-                                onClick={() =>
-                                    onReject(appointment._id)
-                                }
-                                className={`bg-red-600 hover:bg-red-700 ${buttonStyle}`}
-                            >
-                                Reject
-                            </button>
-                        </>
-                    )
-                }
-
-
-                {/* complete */}
-                {
-                    user?.role !== 'employee' &&
-                    appointment.status === 'approved' && (
-
-                        <button
-                            onClick={() =>
-                                onComplete(appointment._id)
-                            }
-                            className={`bg-blue-600 hover:bg-blue-700 ${buttonStyle}`}
-                        >
-                            Complete
-                        </button>
-                    )
-                }
-
-
-                {/* cancel */}
-                {
-                    user?.role === 'employee' &&
-                    ['pending', 'approved'].includes(
-                        appointment.status
-                    ) && (
-
-                        <button
-                            onClick={() =>
-                                onCancel(appointment._id)
-                            }
-                            className={`bg-gray-700 hover:bg-gray-800 ${buttonStyle}`}
-                        >
-                            Cancel
-                        </button>
-                    )
-                }
-
-            </div>
+          </div>
 
         </div>
-    );
+
+
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-semibold capitalize
+
+          ${
+            appointment.status === "pending"
+              ? "bg-yellow-100 text-yellow-700"
+
+              : appointment.status === "approved"
+              ? "bg-green-100 text-green-700"
+
+              : appointment.status === "completed"
+              ? "bg-gray-200 text-gray-700"
+
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+
+          {appointment.status}
+
+        </span>
+
+      </div>
+
+
+      {/* date */}
+      <div className="grid grid-cols-2 gap-4 text-sm">
+
+        <div className="flex items-center gap-2 text-gray-600">
+
+          <Calendar size={16} />
+
+          {date.toLocaleDateString()}
+
+        </div>
+
+        <div className="flex items-center gap-2 text-gray-600">
+
+          <Clock size={16} />
+
+          {date.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+          })}
+
+        </div>
+
+      </div>
+
+
+      {/* purpose */}
+      <div>
+
+        <p className="text-sm font-semibold text-gray-700 mb-1">
+          Purpose
+        </p>
+
+        <p className="text-gray-600 text-sm">
+          {appointment.purpose}
+        </p>
+
+      </div>
+
+
+      {/* notes */}
+      {
+        appointment.notes && (
+
+          <div className="bg-blue-50 rounded-xl p-3 flex gap-2">
+
+            <FileText
+              size={16}
+              className="text-blue-600 mt-0.5"
+            />
+
+            <p className="text-sm text-blue-700">
+              {appointment.notes}
+            </p>
+
+          </div>
+        )
+      }
+
+
+      {/* buttons */}
+      <div className="flex gap-3 pt-2">
+
+        {
+          appointment.status === "pending" && (
+
+            <>
+              <button
+                disabled={processingId}
+                onClick={() => onApprove(appointment._id)}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
+              >
+
+                <CheckCircle size={18} />
+
+                Approve
+
+              </button>
+
+              <button
+                disabled={processingId}
+                onClick={() => onReject(appointment._id)}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
+              >
+
+                <XCircle size={18} />
+
+                Reject
+
+              </button>
+            </>
+          )
+        }
+
+
+        {
+          appointment.status === "approved" && (
+
+            <button
+              disabled={processingId}
+              onClick={() => onComplete(appointment._id)}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold"
+            >
+
+              Complete Appointment
+
+            </button>
+          )
+        }
+
+      </div>
+
+    </div>
+  );
 }

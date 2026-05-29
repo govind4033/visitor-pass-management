@@ -9,12 +9,12 @@ import {
   RefreshCcw
 } from 'lucide-react';
 
-import QRScanner from '../components/QRScanner';
+import QRScanner from '../../components/QRScanner';
 
 import {
   checkIn,
   checkOut
-} from '../api/checkApi';
+} from '../../api/checkApi';
 
 
 export default function CheckIn() {

@@ -1,188 +1,140 @@
-const Visitor = require('../Models/Visitor');
+const User = require('../Models/User');
 const Pass = require('../Models/Pass');
 const CheckLog = require('../Models/Checklog');
 
 exports.getSummary = async (req, res) => {
+  try {
+    // today range
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
 
-    try {
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
 
-        // today's date range
-        const start = new Date();
-        start.setHours(0,0,0,0);
+    // total visitors = users with role visitor
+    const totalVisitors = await User.countDocuments({ role: 'visitor' });
 
-        const end = new Date();
-        end.setHours(23,59,59,999);
+    // today visitors (new registrations)
+    const todayVisitors = await User.countDocuments({
+      role: 'visitor',
+      createdAt: { $gte: start, $lte: end }
+    });
 
-        // counts
-        const totalVisitors = await Visitor.countDocuments();
+    // active passes
+    const activePasses = await Pass.countDocuments({
+      status: 'active'
+    });
 
-        const todayVisitors = await Visitor.countDocuments({
-        createdAt: {
-            $gte: start,
-            $lte: end
-        }
-        });
+    // today check-ins
+    const todayCheckins = await CheckLog.countDocuments({
+      type: 'check-in',
+      timestamp: { $gte: start, $lte: end }
+    });
 
-        const activePasses = await Pass.countDocuments({
-        status: 'active'
-        });
+    // checked-in visitors (based on logs or pass status)
+    const checkedInVisitors = await Pass.countDocuments({
+      status: 'checked-in'
+    });
 
-        const todayCheckins = await CheckLog.countDocuments({
-        type: 'check-in',
-        timestamp: {
-            $gte: start,
-            $lte: end
-        }
-        });
+    return res.json({
+      totalVisitors,
+      todayVisitors,
+      activePasses,
+      todayCheckins,
+      checkedInVisitors
+    });
 
-        const checkedInVisitors = await Visitor.countDocuments({
-        status: 'checked-in'
-        });
-
-        // response
-        res.json({
-        totalVisitors,
-        todayVisitors,
-        activePasses,
-        todayCheckins,
-        checkedInVisitors
-        });
-
-    } catch (err) {
-
-        res.status(500).json({
-        message: err.message
-        });
-
-    }
-
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message
+    });
+  }
 };
 
 exports.getDailyStats = async (req, res) => {
+  try {
+    const from = new Date(req.query.from);
+    const to = new Date(req.query.to);
 
-    try {
-
-        const from = new Date(req.query.from);
-
-        const to = new Date(req.query.to);
-
-        const stats = await CheckLog.aggregate([
-
-        {
-            $match: {
-            type: 'check-in',
-
-            timestamp: {
-                $gte: from,
-                $lte: to
-            }
-            }
-        },
-
-        {
-            $group: {
-
-            _id: {
-                day: { $dayOfMonth: '$timestamp' },
-
-                month: { $month: '$timestamp' },
-
-                year: { $year: '$timestamp' }
-            },
-
-            count: {
-                $sum: 1
-            }
-            }
+    const stats = await CheckLog.aggregate([
+      {
+        $match: {
+          type: 'check-in',
+          timestamp: {
+            $gte: from,
+            $lte: to
+          }
         }
+      },
+      {
+        $group: {
+          _id: {
+            day: { $dayOfMonth: '$timestamp' },
+            month: { $month: '$timestamp' },
+            year: { $year: '$timestamp' }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 }
+      }
+    ]);
 
-        ]);
+    return res.json({ stats });
 
-        res.json({ stats });
-
-    } catch (err) {
-
-        res.status(500).json({
-        message: err.message
-        });
-
-    }
-
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message
+    });
+  }
 };
 
 exports.getPeakHours = async (req, res) => {
-
-    try {
-
-        const hours = await CheckLog.aggregate([
-
-        {
-            $match: {
-            type: 'check-in'
-            }
-        },
-
-        {
-            $group: {
-
-            _id: {
-                $hour: '$timestamp'
-            },
-
-            count: {
-                $sum: 1
-            }
-            }
+  try {
+    const hours = await CheckLog.aggregate([
+      {
+        $match: {
+          type: 'check-in'
         }
+      },
+      {
+        $group: {
+          _id: { $hour: '$timestamp' },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      }
+    ]);
 
-        ]);
+    return res.json({ hours });
 
-        res.json({ hours });
-
-    } catch (err) {
-
-        res.status(500).json({
-        message: err.message
-        });
-
-    }
-
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message
+    });
+  }
 };
 
 exports.exportCSV = async (req, res) => {
+  try {
+    const visitors = await User.find({ role: 'visitor' });
 
-    try {
+    let csv = 'Name,Email,Phone,Company\n';
 
-        const visitors = await Visitor.find()
+    visitors.forEach(v => {
+      csv += `${v.name},${v.email},${v.phone || ''},${v.company || ''}\n`;
+    });
 
-        .populate('hostEmployee', 'name');
+    res.header('Content-Type', 'text/csv');
+    res.attachment('visitors.csv');
+    return res.send(csv);
 
-        // csv headers
-        let csv =
-        'Name,Email,Phone,Company,Status\n';
-
-        // rows
-        visitors.forEach(v => {
-
-        csv +=
-            `${v.name},${v.email},${v.phone},${v.company},${v.status}\n`;
-
-        });
-
-        // response headers
-        res.header('Content-Type', 'text/csv');
-
-        res.attachment('visitors.csv');
-
-        // send csv
-        res.send(csv);
-
-    } catch (err) {
-
-        res.status(500).json({
-        message: err.message
-        });
-
-    }
-
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message
+    });
+  }
 };

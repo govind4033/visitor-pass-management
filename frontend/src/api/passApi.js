@@ -14,3 +14,8 @@ export const getAllPasses = async () => {
     const res = await api.get('/passes');
     return res.data;
 };
+
+export const getVisitorOwnPasses = async () => {
+    const res = await api.get('/passes/my-passes');
+    return res.data;
+};

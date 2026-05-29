@@ -47,7 +47,7 @@ const passSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['active', 'used', 'expired', 'revoked'],
+        enum: ['active', 'used', 'expired'],
         default: 'active'
     }
 }, { timestamps: true });

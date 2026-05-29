@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAllPasses } from '../api/passApi';
+import { getAllPasses } from '../../api/passApi';
 import { Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 

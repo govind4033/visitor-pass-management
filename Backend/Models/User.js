@@ -10,7 +10,7 @@ const userSchema = new Schema({
     password: { type: String, required: true, select: false },
     role: { 
         type: String, 
-        enum: ['admin', 'security', 'employee']
+        enum: ['admin', 'security', 'employee', 'visitor']
     },
     phone: {type: String, trim: true},
     department: {type: String, trim: true},
@@ -19,7 +19,7 @@ const userSchema = new Schema({
 
 // Static signup method
 userSchema.statics.signup = async function (data) {
-    const { name, email, password, role } = data;
+    const { name, email, password, role, phone, department } = data;
 
     // Validate all
     if (!email || !password || !name) {
@@ -44,7 +44,7 @@ userSchema.statics.signup = async function (data) {
     const hash = await bcrypt.hash(password, salt);
 
     // Create user
-    const user = await this.create({ name, email, password: hash, role });
+    const user = await this.create({ name, email, password: hash, role, phone, department });
     return user;
 };
 

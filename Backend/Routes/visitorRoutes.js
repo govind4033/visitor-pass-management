@@ -10,13 +10,13 @@ router.use(protect);
 router.get('/', authorize('admin', 'security'), getAllVisitors);
 
 // Create visitor (with photo upload)
-router.post('/', authorize('admin', 'security', 'employee'), upload.single('photo'), createVisitor);
+router.post('/', authorize('admin', 'visitor'), upload.single('photo'), createVisitor);
 
 // Get single visitor by id
 router.get('/:id', authorize('admin', 'security', 'employee'), getVisitor);
 
 // Update visitor
-router.patch( '/:id', authorize('admin', 'security'), upload.single('photo'), updateVisitor);
+router.patch( '/:id', authorize('admin', 'visitor'), upload.single('photo'), updateVisitor);
 
 // Delete visitor
 router.delete('/:id', authorize('admin'), deleteVisitor);

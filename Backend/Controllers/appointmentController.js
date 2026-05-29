@@ -1,50 +1,59 @@
 const Appointment = require('../Models/Appointment');
-const Visitor = require('../Models/Visitor');
-const sendEmail = require('../Utils/sendEmail');
+const User = require('../Models/User');
+const { sendAppointmentEmail } = require('../Utils/sendEmail');
 const { sendSMS } = require('../Utils/sendSMS');
 
 // only in created, approve and reject have the email and sms services
 
 exports.createAppointment = async (req, res) => {
   try {
+    // 1. Logged-in visitor context extracted from auth token middleware
+    const visitorId = req.user._id;
 
-    // check visitor
-    const visitor = await Visitor.findById(req.body.visitorId);
+    // 2. Extract input body variables from the frontend form payload
+    const { hostId, visitDate, visitTime, purpose, notes } = req.body;
 
-    if (!visitor) {
+    // 3. Verify that the requested host employee exists
+    const hostEmployee = await User.findOne({ _id: hostId, role: "employee" });
+    if (!hostEmployee) {
       return res.status(404).json({
-        message: "Visitor not found"
+        success: false,
+        message: "Host employee not found in our directory.",
       });
     }
 
-    // create appointment
+    // 4. Combine text date and time into a single valid JavaScript Date object
+    const combinedScheduledDate = new Date(`${visitDate}T${visitTime}`);
+
+    // 5. Create the appointment matching your schema properties
     const appointment = await Appointment.create({
-      visitor: visitor._id,
-      host: req.user._id,
-      scheduledAt: req.body.scheduledAt,
-      purpose: req.body.purpose,
-      notes: req.body.notes
+      visitor: visitorId,
+      host: hostEmployee._id,
+      scheduledAt: combinedScheduledDate,
+      purpose,
+      notes,
     });
 
-    // send sms
-    await sendSMS(
-      appointment.visitor.phone,
-      'Your appointment has been created'
-    )
+    // 6. Communication Alert Notifications
+    try {
+      await sendAppointmentEmail(
+        req.user.email, // Logged-in visitor's email
+        "Appointment Requested Successfully",
+        `Hello ${req.user.name}, your visit reservation request with ${hostEmployee.name} has been received.`
+      );
+    } catch (e) {
+      console.log("Email notifications dispatch failed:", e.message);
+    }
 
-    // send email
-    await sendEmail(
-      visitor.email,
-      "Appointment Created",
-      `Hello ${visitor.name}, your appointment has been created successfully.`
-    );
-
-    // send response
-    res.status(201).json({ appointment });
+    res.status(201).json({
+      success: true,
+      appointment,
+    });
 
   } catch (err) {
     res.status(500).json({
-      message: err.message
+      success: false,
+      message: err.message,
     });
   }
 };
@@ -56,50 +65,33 @@ exports.getAppointments = async (req, res) => {
 
     const query = {};
 
-    // employee sees only own appointments
+    // employee sees only their appointments
     if (req.user.role === 'employee') {
       query.host = req.user._id;
     }
 
-    // filter by status
-    if (status) {
-      query.status = status;
-    }
+    if (status) query.status = status;
 
-    // filter by date
     if (date) {
-
       const start = new Date(date);
-      start.setHours(0,0,0,0);
+      start.setHours(0, 0, 0, 0);
 
       const end = new Date(date);
-      end.setHours(23,59,59,999);
+      end.setHours(23, 59, 59, 999);
 
-      query.scheduledAt = {
-        $gte: start,
-        $lte: end
-      };
+      query.scheduledAt = { $gte: start, $lte: end };
     }
 
-    // get appointments
     const appointments = await Appointment.find(query)
-
-      .populate('visitor', 'name email phone photo')
-
+      .populate('visitor', 'name email phone photo role')
       .populate('host', 'name email department')
-
       .populate('approvedBy', 'name')
-
       .sort({ scheduledAt: 1 })
-
       .skip((page - 1) * limit)
-
       .limit(Number(limit));
 
-    // count total
     const total = await Appointment.countDocuments(query);
 
-    // response
     res.json({
       appointments,
       total,
@@ -108,8 +100,59 @@ exports.getAppointments = async (req, res) => {
     });
 
   } catch (err) {
+    res.status(500).json({
+      message: err.message
+    });
+  }
+};
+
+exports.getVisitorOwnAppointments = async (req, res) => {
+  try {
+    // Isolate database search parameters purely to the logged-in visitor
+    const appointments = await Appointment.find({ visitor: req.user._id })
+      .populate('host', 'name email department')
+      .sort({ scheduledAt: -1 }); // Sort newest first
+
+    res.status(200).json({
+      success: true,
+      appointments
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.getMyVisitors = async (req, res) => {
+  try {
+
+    const appointments = await Appointment.find({
+      host: req.user._id,
+      status: { $in: ["approved", "completed"] }
+    })
+
+    .populate("visitor", "name email phone")
+
+    .sort({ scheduledAt: -1 });
+
+    const visitors = appointments.map((appt) => ({
+      _id: appt.visitor?._id,
+      name: appt.visitor?.name,
+      email: appt.visitor?.email,
+      phone: appt.visitor?.phone,
+      appointmentDate: appt.scheduledAt,
+      appointmentStatus: appt.status,
+      purpose: appt.purpose
+    }));
+
+    res.json({
+      success: true,
+      visitors
+    });
+
+  } catch (err) {
 
     res.status(500).json({
+      success: false,
       message: err.message
     });
 
@@ -119,23 +162,17 @@ exports.getAppointments = async (req, res) => {
 exports.getAppointmentById = async (req, res) => {
   try {
 
-    // get appointment by id
     const appointment = await Appointment.findById(req.params.id)
-
-      .populate('visitor', 'name email phone photo')
-
+      .populate('visitor', 'name email phone photo role')
       .populate('host', 'name email department')
-
       .populate('approvedBy', 'name');
 
-    // check appointment exists
     if (!appointment) {
       return res.status(404).json({
         message: "Appointment not found"
       });
     }
 
-    // employee can only view own appointments
     if (
       req.user.role === 'employee' &&
       appointment.host._id.toString() !== req.user._id.toString()
@@ -145,133 +182,71 @@ exports.getAppointmentById = async (req, res) => {
       });
     }
 
-    // response
     res.json({ appointment });
 
   } catch (err) {
-
     res.status(500).json({
       message: err.message
     });
-
   }
 };
 
 exports.approveAppointment = async (req, res) => {
   try {
 
-    // find appointment
     const appointment = await Appointment.findById(req.params.id)
-
       .populate('visitor')
-
       .populate('host', 'name');
 
-    // check exists
-    if (!appointment) {
-      return res.status(404).json({
-        message: "Appointment not found"
-      });
-    }
+    if (!appointment)
+      return res.status(404).json({ message: "Appointment not found" });
 
-    // only pending appointments allowed
-    if (appointment.status !== 'pending') {
+    if (appointment.status !== 'pending')
       return res.status(400).json({
-        message: `Appointment already ${appointment.status}`
+        message: `Already ${appointment.status}`
       });
-    }
 
-    // employee can approve only own appointments
-    if (
-      req.user.role === 'employee' &&
-      appointment.host._id.toString() !== req.user._id.toString()
-    ) {
-      return res.status(403).json({
-        message: "Not your appointment"
-      });
-    }
-
-    // approve appointment
     appointment.status = 'approved';
-
     appointment.approvedBy = req.user._id;
-
     appointment.approvedAt = new Date();
-
-    appointment.notified = false;
 
     await appointment.save();
 
-    // phone sms notification
-    await sendSMS(
-      appointment.visitor.phone,
-      'Your appointment has been approved'
-    );
+    const updated = await Appointment.findById(appointment._id)
+      .populate('visitor', 'name email phone photo')
+      .populate('host', 'name email department')
+      .populate('approvedBy', 'name');
 
-    // send email
-    await sendAppointmentNotification(
-      appointment.visitor,
-      appointment,
-      'approved'
-    );
-
-    // response
-    res.json({ appointment });
+    res.json({ appointment: updated });
 
   } catch (err) {
-
-    res.status(500).json({
-      message: err.message
-    });
-
+    res.status(500).json({ message: err.message });
   }
 };
 
 exports.rejectAppointment = async (req, res) => {
   try {
 
-    // get reason
-    const { reason } = req.body;
+    const appointment = await Appointment.findById(req.params.id);
 
-    // find appointment
-    const appointment = await Appointment.findById(req.params.id)
-
-      .populate('visitor');
-
-    // check valid appointment
     if (!appointment || appointment.status !== 'pending') {
-
       return res.status(400).json({
         message: "Cannot reject this appointment"
       });
-
     }
 
-    // reject appointment
     appointment.status = 'rejected';
-
-    // save rejection reason
-    if (reason) {
-      appointment.notes = reason;
-    }
 
     await appointment.save();
 
-    // phone sms notification
-    await sendSMS(
-      appointment.visitor.phone,
-      'Your appointment was rejected'
-    );
+    const updatedAppointment = await Appointment.findById(appointment._id)
+      .populate('visitor', 'name email phone photo')
+      .populate('host', 'name email department')
+      .populate('approvedBy', 'name');
 
-    // send email notification
-    await sendAppointmentNotification(
-      appointment.visitor,
-      appointment,
-      'rejected'
-    );
-
-    // response
-    res.json({ appointment });
+    res.json({
+      appointment: updatedAppointment
+    });
 
   } catch (err) {
 
@@ -293,9 +268,9 @@ exports.cancelAppointment = async (req, res) => {
       });
     }
 
-    if (appointment.status !== 'approved') {
+    if (!['pending', 'approved'].includes(appointment.status)) {
       return res.status(400).json({
-        message: "Only approved appointments can be cancelled"
+        message: "Cannot cancel this appointment"
       });
     }
 
@@ -303,7 +278,14 @@ exports.cancelAppointment = async (req, res) => {
 
     await appointment.save();
 
-    res.json({ appointment });
+    const updatedAppointment = await Appointment.findById(appointment._id)
+      .populate('visitor', 'name email phone photo')
+      .populate('host', 'name email department')
+      .populate('approvedBy', 'name');
+
+    res.json({
+      appointment: updatedAppointment
+    });
 
   } catch (err) {
 
@@ -335,7 +317,14 @@ exports.completeAppointment = async (req, res) => {
 
     await appointment.save();
 
-    res.json({ appointment });
+    const updatedAppointment = await Appointment.findById(appointment._id)
+      .populate('visitor', 'name email phone photo')
+      .populate('host', 'name email department')
+      .populate('approvedBy', 'name');
+
+    res.json({
+      appointment: updatedAppointment
+    });
 
   } catch (err) {
 

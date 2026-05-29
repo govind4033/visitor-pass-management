@@ -8,6 +8,11 @@ import {
   BadgeCheck,
   BarChart3,
   Settings,
+  ShieldCheck,
+  User,
+  ClipboardList,
+  CalendarPlus,
+  LogOut,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -16,41 +21,30 @@ const Sidebar = () => {
   const role = user?.role;
 
   const menuItems = [
+    // ================= ADMIN =================
     {
       label: "Dashboard",
       icon: LayoutDashboard,
-      path: "/dashboard",
-      roles: ["admin", "employee", "security"],
+      path: "/admin",
+      roles: ["admin"],
+    },
+    {
+      label: "Employees",
+      icon: Users,
+      path: "/employees",
+      roles: ["admin"],
+    },
+    {
+      label: "Security Staff",
+      icon: ShieldCheck,
+      path: "/security-staff",
+      roles: ["admin"],
     },
     {
       label: "Visitors",
       icon: Users,
-      path: "/visitors",
-      roles: ["admin", "employee", "security"],
-    },
-    {
-      label: "New Visitor",
-      icon: UserPlus,
-      path: "/visitors/new",
-      roles: ["admin", "employee"],
-    },
-    {
-      label: "Appointments",
-      icon: Calendar,
-      path: "/appointments",
-      roles: ["admin", "employee"],
-    },
-    {
-      label: "Check-In",
-      icon: ScanLine,
-      path: "/checkin",
-      roles: ["admin", "security"],
-    },
-    {
-      label: "Passes",
-      icon: BadgeCheck,
-      path: "/passes/",
-      roles: ["admin", "employee", "security"],
+      path: "/ManageVisitors",
+      roles: ["admin"],
     },
     {
       label: "Reports",
@@ -58,13 +52,111 @@ const Sidebar = () => {
       path: "/reports",
       roles: ["admin"],
     },
-    // implementing afterwards with delete users by admin, dark mode fon't size etc
-    // {
-    //   label: "Settings",
-    //   icon: Settings,
-    //   path: "/settings",
-    //   roles: ["admin"],
-    // },
+    {
+      label: "Settings",
+      icon: Settings,
+      path: "/settings",
+      roles: ["admin"],
+    },
+    // ================= EMPLOYEE =================
+    {
+      label: "Dashboard",
+      icon: LayoutDashboard,
+      path: "/employee",
+      roles: ["employee"],
+    },
+    {
+      label: "Appointments",
+      icon: Calendar,
+      path: "/manage-appointments",
+      roles: ["employee"],
+    },
+    {
+      label: "My Visitors",
+      icon: Users,
+      path: "/my-visitors",
+      roles: ["employee"],
+    },
+    {
+      label: "Profile",
+      icon: User,
+      path: "/profile",
+      roles: ["employee"],
+    },
+    // ================= SECURITY =================
+    {
+      label: "Dashboard",
+      icon: LayoutDashboard,
+      path: "/security",
+      roles: ["security"],
+    },
+    {
+      label: "Visitors",
+      icon: Users,
+      path: "/visitors",
+      roles: ["security"],
+    },
+    {
+      label: "Appointments",
+      icon: Calendar,
+      path: "/appointments",
+      roles: ["security"],
+    },
+    {
+      label: "Passes",
+      icon: BadgeCheck,
+      path: "/passes",
+      roles: ["security"],
+    },
+    {
+      label: "Check-In",
+      icon: ScanLine,
+      path: "/checkin",
+      roles: ["security"],
+    },
+    {
+      label: "Check-Out",
+      icon: LogOut,
+      path: "/checkout",
+      roles: ["security"],
+    },
+    {
+      label: "Logs",
+      icon: ClipboardList,
+      path: "/logs",
+      roles: ["security"],
+    },
+    // ================= VISITOR =================
+    {
+      label: "Dashboard",
+      icon: LayoutDashboard,
+      path: "/visitor",
+      roles: ["visitor"],
+    },
+    {
+      label: "Book Appointment",
+      icon: CalendarPlus,
+      path: "/book-appointment",
+      roles: ["visitor"],
+    },
+    {
+      label: "My Appointments",
+      icon: Calendar,
+      path: "/my-appointments",
+      roles: ["visitor"],
+    },
+    {
+      label: "My Pass",
+      icon: BadgeCheck,
+      path: "/my-pass",
+      roles: ["visitor"],
+    },
+    {
+      label: "Profile",
+      icon: User,
+      path: "/profile",
+      roles: ["visitor"],
+    },
   ];
 
   const filteredMenu = menuItems.filter((item) =>

@@ -8,6 +8,7 @@ const authRoutes = require("./Routes/authRoutes");
 const checkRoutes = require("./Routes/checkRoutes");
 const reportRoutes = require('./Routes/reportRoutes');
 const appointmentsRoutes = require('./Routes/apointmentRoutes');
+const userRoutes = require("./Routes/userRoutes");
 
 // Import express, cors and morgan for method logs
 const express = require("express");
@@ -69,6 +70,7 @@ app.use('/api/check', checkRoutes);
 
 app.use('/api/reports', reportRoutes);
 
+app.use('/api/users', userRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {
