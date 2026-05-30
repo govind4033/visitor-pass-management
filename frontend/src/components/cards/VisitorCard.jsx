@@ -11,7 +11,7 @@ import {
 import { Link } from 'react-router-dom';
 import defaultUser from '../assets/Default-user.jpg';
 import { useNavigate } from 'react-router-dom';
-import { generatePass } from '../api/passApi';
+import { generatePass } from '../../api/passApi';
 import { useState } from 'react';
 
 export default function VisitorCard({

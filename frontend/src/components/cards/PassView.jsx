@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getPassById } from '../api/passApi';
+import { getPassById } from '../../api/passApi';
 import { QrCode, Download } from 'lucide-react';
 
 export default function PassView() {

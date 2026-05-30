@@ -9,7 +9,7 @@ import {
   completeAppointment
 } from "../../api/appointmentApi";
 
-import AppointmentCard from "../../components/AppointmentCard";
+import AppointmentCard from "../../components/cards/AppointmentCard";
 
 export default function ManageAppointments() {
 

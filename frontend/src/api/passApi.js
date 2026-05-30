@@ -1,7 +1,7 @@
 import api from './axios';
 
-export const generatePass = async (visitorId) => {
-    const res = await api.post('/passes', { visitorId });
+export const generatePass = async (data) => {
+    const res = await api.post('/passes', data);
     return res.data;
 };
 

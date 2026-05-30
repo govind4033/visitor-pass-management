@@ -10,23 +10,15 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
-// shared pages
-import Dashboard from './pages/shared/Dashboard';
-import Visitors from './pages/shared/Visitors';
-import Appointments from './pages/shared/Appointments';
-import Passes from './pages/shared/Passes';
-import CheckLogs from './pages/shared/CheckLogs';
-import Profile from './pages/shared/Profile';
-
 // admin pages
 import AdminDashboard from './pages/admin/AdminDashboard';
-import CreateUser from './pages/admin/CreateUser';
-import EditUser from './pages/admin/EditUser';
 import Employees from './pages/admin/Employees';
 import SecurityStaff from './pages/admin/SecurityStaff';
 import ManageVisitors from './pages/admin/ManageVisitors';
 import Reports from './pages/admin/Reports';
 import Settings from './pages/admin/Settings';
+import CreateUser from './pages/admin/CreateUser';
+import EditUser from './pages/admin/EditUser';
 
 // employee pages
 import EmployeeDashboard from './pages/employee/EmployeeDashboard';
@@ -35,8 +27,9 @@ import MyVisitors from './pages/employee/MyVisitors';
 
 // security pages
 import SecurityDashboard from './pages/security/SecurityDashboard';
+import VerifyAppointments from './pages/security/VerifyAppointment';
+import Passes from './pages/security/Passes';
 import CheckIn from './pages/security/CheckIn';
-import CheckOut from './pages/security/CheckOut';
 import Logs from './pages/security/Logs';
 
 // visitor pages
@@ -68,36 +61,12 @@ export default function App() {
             }
           >
 
-            {/* ================= SHARED ================= */}
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/appointments" element={<Appointments />} />
-            <Route path="/visitors" element={<Visitors />} />
-            <Route path="/passes" element={<Passes />} />
-            <Route path="/check-logs" element={<CheckLogs />} />
-
             {/* ================= ADMIN ================= */}
             <Route
               path="/admin"
               element={
                 <ProtectedRoute roles={['admin']}>
                   <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/users/new"
-              element={
-                <ProtectedRoute roles={['admin']}>
-                  <CreateUser />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/users/edit/:id"
-              element={
-                <ProtectedRoute roles={['admin']}>
-                  <EditUser />
                 </ProtectedRoute>
               }
             />
@@ -141,6 +110,22 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/users/new"
+              element={
+                <ProtectedRoute roles={['admin']}>
+                  <CreateUser />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/users/edit/:id"
+              element={
+                <ProtectedRoute roles={['admin']}>
+                  <EditUser />
+                </ProtectedRoute>
+              }
+            />
 
             {/* ================= EMPLOYEE ================= */}
             <Route
@@ -178,18 +163,26 @@ export default function App() {
               }
             />
             <Route
+              path="/verify-appointments"
+              element={
+                <ProtectedRoute roles={['security']}>
+                  <VerifyAppointments />
+                </ProtectedRoute>
+              }
+            />
+            <Route 
+              path="/passes" 
+              element={
+                <ProtectedRoute roles={['security']}>
+                  <Passes />
+                </ProtectedRoute>
+              } 
+            />
+            <Route
               path="/checkin"
               element={
                 <ProtectedRoute roles={['security']}>
                   <CheckIn />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/checkout"
-              element={
-                <ProtectedRoute roles={['security']}>
-                  <CheckOut />
                 </ProtectedRoute>
               }
             />

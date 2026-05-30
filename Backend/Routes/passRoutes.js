@@ -13,7 +13,7 @@ router.get('/my-passes', authorize('visitor'), getVisitorOwnPasses);
 
 router.get('/:id', authorize('admin', 'security'), getPassById);
 
-router.get('/', authorize('visitor'), getAllPasses);
+router.get('/', authorize('visitor', 'security'), getAllPasses);
 
 // 1. admin or security issue Pass
 // 2. finds visitor

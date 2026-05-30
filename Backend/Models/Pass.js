@@ -4,7 +4,7 @@ const passSchema = new mongoose.Schema({
     // take object id from visitor schema whose pass is going to be generated
     visitor: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Visitor',
+        ref: 'User',
         required: [true, 'Pass must be linked to a visitor']
     },
     // it's optional according to hostemployee if it's a ceo then required if for employee no need
@@ -47,7 +47,7 @@ const passSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['active', 'used', 'expired'],
+        enum: ['active', "checked-in",'used'],
         default: 'active'
     }
 }, { timestamps: true });

@@ -10,7 +10,7 @@ const checkLogSchema = new mongoose.Schema({
     // visitor reference is required for reporting
     visitor: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Visitor',
+        ref: 'User',
         required: true
     },
     type: {

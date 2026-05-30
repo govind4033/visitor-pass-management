@@ -91,15 +91,9 @@ const Sidebar = () => {
       roles: ["security"],
     },
     {
-      label: "Visitors",
-      icon: Users,
-      path: "/visitors",
-      roles: ["security"],
-    },
-    {
-      label: "Appointments",
+      label: "Verify Appointments",
       icon: Calendar,
-      path: "/appointments",
+      path: "/verify-appointments",
       roles: ["security"],
     },
     {
@@ -109,15 +103,9 @@ const Sidebar = () => {
       roles: ["security"],
     },
     {
-      label: "Check-In",
+      label: "CheckPoint",
       icon: ScanLine,
       path: "/checkin",
-      roles: ["security"],
-    },
-    {
-      label: "Check-Out",
-      icon: LogOut,
-      path: "/checkout",
       roles: ["security"],
     },
     {

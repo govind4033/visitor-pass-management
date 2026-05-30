@@ -1,5 +1,6 @@
 const Pass = require('../models/Pass');
 const User = require('../models/User');
+const Appointment = require('../Models/Appointment');
 const generateQR = require('../Utils/generateOR');
 const generatePDF = require('../Utils/generatePDF');
 const crypto = require('crypto');
@@ -7,59 +8,132 @@ const { sendPassEmail } = require('../Utils/sendEmail');
 const { sendSMS } = require('../Utils/sendSMS');
 
 exports.issuePass = async (req, res) => {
+
   try {
 
-    // get visitor (now from User collection)
+    const { visitorId, appointmentId } = req.body;
+
+    // visitor
     const visitor = await User.findOne({
-      _id: req.body.visitorId,
+      _id: visitorId,
       role: 'visitor'
     });
 
-    if (!visitor)
-      return res.status(404).json({ msg: "Visitor not found" });
+    if (!visitor) {
+      return res.status(404).json({
+        message: "Visitor not found"
+      });
+    }
 
-    // today start
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // appointment
+    const appointment = await Appointment.findById(appointmentId)
+      .populate('host', 'name department');
 
-    // prevent multiple active passes per day
-    const already = await Pass.findOne({
-      visitor: visitor._id,
-      status: "active",
-      issuedAt: { $gte: today }
+    if (!appointment) {
+      return res.status(404).json({
+        message: "Appointment not found"
+      });
+    }
+
+    // only approved appointments
+    if (appointment.status !== 'approved') {
+      return res.status(400).json({
+        message: "Only approved appointments can generate passes"
+      });
+    }
+
+    // already generated
+    const existingPass = await Pass.findOne({
+      appointment: appointment._id
     });
 
-    if (already)
-      return res.status(400).json({ msg: "Pass already issued today" });
+    if (existingPass) {
+      return res.status(400).json({
+        message: "Pass already generated"
+      });
+    }
 
     // generate pass code
-    const code = `VPMS-${Date.now()}-${crypto.randomBytes(2).toString('hex')}`;
+    const code =
+      `VPMS-${Date.now()}-${crypto.randomBytes(2).toString('hex')}`;
 
-    // generate QR + PDF
-    const qr = await generateQR(code);
-    const pdf = await generatePDF(visitor, code, qr);
+    // qr
+    let qr = null;
+
+    try {
+      qr = await generateQR(code);
+    } catch (e) {
+      console.log("QR generation failed:", e.message);
+    }
+
+    // pdf
+    let pdf = null;
+
+    try {
+      pdf = await generatePDF(visitor, code, qr);
+    } catch (e) {
+      console.log("PDF generation failed:", e.message);
+    }
 
     // create pass
     const pass = await Pass.create({
+
       visitor: visitor._id,
+
+      appointment: appointment._id,
+
       passCode: code,
+
       qrCodeUrl: qr,
-      pdfUrl: pdf,
+
+      pdfUrl: `${process.env.BASE_URL}/uploads/${pdf}`,
+
       issuedBy: req.user._id,
+
       status: "active"
     });
 
-    // notifications
-    await sendSMS(visitor.phone, 'Your pass has been issued');
-    await sendPassEmail(visitor, pass);
+    // notifications (optional-safe)
+    try {
+
+      if (visitor.phone) {
+        await sendSMS(
+          visitor.phone,
+          'Your visitor pass has been generated.'
+        );
+      }
+
+    } catch (e) {
+
+      console.log("SMS failed:", e.message);
+
+    }
+
+    try {
+
+      await sendPassEmail(visitor, pass);
+
+    } catch (e) {
+
+      console.log("Email failed:", e.message);
+
+    }
 
     res.status(201).json({
+      success: true,
       pass,
-      download: `/uploads/${pdf}`
+      download: pdf ? `/uploads/${pdf}` : null
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+
   }
 };
 

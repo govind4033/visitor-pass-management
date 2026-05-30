@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
     getVisitorById,
     updateVisitor
-} from '../api/visitorApi';
+} from '../../api/visitorApi';
 
 export default function EditVisitor() {
 

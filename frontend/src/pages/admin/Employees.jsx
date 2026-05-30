@@ -8,7 +8,7 @@ import {
   Search
 } from 'lucide-react';
 
-import UserCard from '../../components/UserCard';
+import UserCard from '../../components/cards/UserCard';
 
 import {
   getUsers,

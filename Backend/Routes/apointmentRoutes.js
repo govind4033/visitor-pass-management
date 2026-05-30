@@ -24,9 +24,9 @@ router.get('/:id', getAppointmentById);
 
 router.patch('/:id/approve', authorize('security', 'employee'), approveAppointment);
 
-router.patch('/:id/reject', authorize('security', 'employee'), rejectAppointment);
+router.patch('/:id/reject', authorize( 'employee'), rejectAppointment);
 
-router.patch('/:id/cancel', authorize('visitor'), cancelAppointment);
+router.patch('/:id/cancel', authorize('visitor', 'security'), cancelAppointment);
 
 router.patch('/:id/complete', authorize('employee'), completeAppointment);
 

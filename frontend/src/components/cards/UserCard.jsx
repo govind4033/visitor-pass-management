@@ -9,7 +9,7 @@ import {
 
 import { Link } from 'react-router-dom';
 
-import defaultUser from '../assets/Default-user.jpg';
+import defaultUser from '../../assets/Default-user.jpg';
 
 
 export default function UserCard({ user, onDelete, showUpdate = true }) {
