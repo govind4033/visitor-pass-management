@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getAllUsers, createUser, getUserById, updateUser, deleteuser } = require('../Controllers/userController');
+const { getAllUsers, createUser, getUserById, updateUser, deleteuser, getMyProfile, updateProfile } = require('../Controllers/userController');
 const { protect, authorize } = require("../Middleware/authMiddleware");
 const upload = require("../Middleware/uploadMiddleware");
 
@@ -10,7 +10,11 @@ router.get('/', authorize('admin', 'visitor'), getAllUsers);
 
 router.post('/', authorize('admin'), createUser);
 
-router.get('/:id', authorize('admin'), getUserById);
+router.get('/me', getMyProfile);
+
+router.put('/me', upload.single('photo'), updateProfile);
+
+router.get('/:id', authorize('admin', 'visitor'), getUserById);
 
 router.patch('/:id', authorize('admin'), updateUser);
 

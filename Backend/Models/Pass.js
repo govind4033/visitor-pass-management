@@ -24,6 +24,9 @@ const passSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    pdfFile: {
+        type: String
+    },
     pdfUrl: {
         type: String
     },

@@ -5,6 +5,7 @@ import ProtectedRoute from './routes/ProtectedRoute';
 
 // layout
 import DashboardLayout from './components/layout/DashboardLayout';
+import HomeRedirect from './routes/HomeRedirect';
 
 // auth pages
 import Login from './pages/auth/Login';
@@ -37,6 +38,8 @@ import VisitorDashboard from './pages/visitor/VisitorDashboard';
 import BookAppointment from './pages/visitor/BookAppointment';
 import MyAppointments from './pages/visitor/MyAppointments';
 import MyPass from './pages/visitor/MyPass';
+import Profile from './pages/visitor/Profile';
+import EditProfile from './pages/visitor/EditProfile';
 
 export default function App() {
   return (
@@ -50,7 +53,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/" element={<HomeRedirect />} />
 
           {/* PROTECTED LAYOUT */}
           <Route
@@ -225,6 +228,22 @@ export default function App() {
               element={
                 <ProtectedRoute roles={['visitor']}>
                   <MyPass />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute roles={['visitor', 'employee', 'security']}>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/edit"
+              element={
+                <ProtectedRoute roles={['visitor', 'employee', 'security']}>
+                  <EditProfile />
                 </ProtectedRoute>
               }
             />

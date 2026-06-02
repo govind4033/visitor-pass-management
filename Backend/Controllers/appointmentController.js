@@ -36,11 +36,7 @@ exports.createAppointment = async (req, res) => {
 
     // 6. Communication Alert Notifications
     try {
-      await sendAppointmentEmail(
-        req.user.email, // Logged-in visitor's email
-        "Appointment Requested Successfully",
-        `Hello ${req.user.name}, your visit reservation request with ${hostEmployee.name} has been received.`
-      );
+      await sendAppointmentEmail(req.user, "created");
     } catch (e) {
       console.log("Email notifications dispatch failed:", e.message);
     }
@@ -212,6 +208,10 @@ exports.approveAppointment = async (req, res) => {
 
     await appointment.save();
 
+    await sendSMS(appointment.visitor.phone, "your appointment has been approved");
+
+    await sendAppointmentEmail( appointment.visitor, "approved" );
+
     const updated = await Appointment.findById(appointment._id)
       .populate('visitor', 'name email phone photo')
       .populate('host', 'name email department')
@@ -236,6 +236,12 @@ exports.rejectAppointment = async (req, res) => {
     }
 
     appointment.status = 'rejected';
+
+    const user = await User.findById(appointment.visitor);
+
+    await sendAppointmentEmail( user, "rejected" );
+
+    await sendSMS(user.phone, "your appointment has been rejected");
 
     await appointment.save();
 
@@ -275,6 +281,10 @@ exports.cancelAppointment = async (req, res) => {
     }
 
     appointment.status = 'cancelled';
+
+    const user = await User.findById(appointment.visitor);
+
+    await sendAppointmentEmail( user, "cancelled");
 
     await appointment.save();
 

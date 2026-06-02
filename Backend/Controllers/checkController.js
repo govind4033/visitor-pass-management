@@ -2,6 +2,7 @@ const Pass = require('../models/Pass');
 const User = require('../models/User');
 const CheckLog = require('../models/CheckLog');
 const { sendCheckinAlert } = require('../Utils/sendEmail');
+const Appointment = require('../Models/Appointment');
 
 exports.checkIn = async (req, res) => {
   try {
@@ -40,6 +41,20 @@ exports.checkIn = async (req, res) => {
     await User.findByIdAndUpdate(pass.visitor._id, {
       status: "checked-in"
     });
+
+    const appointment = await Appointment.findById(pass.appointment).populate("host");
+
+    const host = appointment.host;
+
+    try {
+      console.log("Sending email to:", host.email);
+
+      await sendCheckinAlert(host, pass.visitor);
+
+      console.log("Check-in email sent");
+    } catch (e) {
+      console.log("Check-in email failed:", e.message);
+    }
 
     return res.json({
       message: "Check-in success",

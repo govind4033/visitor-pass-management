@@ -1,52 +1,44 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import {
-    getVisitorById,
-    updateVisitor
-} from '../../api/visitorApi';
+    getProfile,
+    updateProfile
+} from '../../api/userApi';
 
-export default function EditVisitor() {
-
-    const { id } = useParams();
+export default function EditProfile() {
 
     const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(true);
 
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone: '',
-        company: '',
-        visitDate: '',
         photo: null
     });
 
-    const [loading, setLoading] = useState(true);
-
-    // fetch existing visitor
     useEffect(() => {
 
-        const fetchVisitor = async () => {
+        const fetchProfile = async () => {
 
             try {
 
-                const data =
-                    await getVisitorById(id);
+                const res = await getProfile();
+
+                const user = res.data;
 
                 setFormData({
-                    name: data.name || '',
-                    email: data.email || '',
-                    phone: data.phone || '',
-                    company: data.company || '',
-                    visitDate: data.visitDate
-                        ? data.visitDate.split('T')[0]
-                        : ''
+                    name: user.name || '',
+                    email: user.email || '',
+                    phone: user.phone || '',
+                    photo: null
                 });
 
             } catch (err) {
 
                 console.error(err);
-                alert('Failed to load visitor');
 
             } finally {
 
@@ -54,13 +46,10 @@ export default function EditVisitor() {
             }
         };
 
-        fetchVisitor();
+        fetchProfile();
 
-    }, [id]);
+    }, []);
 
-
-
-    // input change
     const handleChange = (e) => {
 
         setFormData({
@@ -69,8 +58,6 @@ export default function EditVisitor() {
         });
     };
 
-
-    // update visitor
     const handleSubmit = async (e) => {
 
         e.preventDefault();
@@ -82,28 +69,24 @@ export default function EditVisitor() {
             data.append('name', formData.name);
             data.append('email', formData.email);
             data.append('phone', formData.phone);
-            data.append('company', formData.company);
-            data.append('visitDate', formData.visitDate);
 
-            // optional photo
             if (formData.photo) {
                 data.append('photo', formData.photo);
             }
 
-            await updateVisitor(id, data);
+            await updateProfile(data);
 
-            alert('Visitor updated successfully');
+            alert('Profile updated successfully');
 
-            navigate('/visitors');
+            navigate('/profile');
 
         } catch (err) {
 
             console.error(err);
 
-            alert('Failed to update visitor');
+            alert('Failed to update profile');
         }
     };
-
 
     if (loading) {
 
@@ -114,13 +97,12 @@ export default function EditVisitor() {
         );
     }
 
-
     return (
 
         <div className="max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow">
 
             <h1 className="text-3xl font-bold mb-6">
-                Edit Visitor
+                Edit Profile
             </h1>
 
             <form
@@ -131,44 +113,27 @@ export default function EditVisitor() {
                 <input
                     type="text"
                     name="name"
-                    placeholder="Name"
                     value={formData.name}
                     onChange={handleChange}
+                    placeholder="Name"
                     className="w-full border p-3 rounded-xl"
                 />
 
                 <input
                     type="email"
                     name="email"
-                    placeholder="Email"
                     value={formData.email}
                     onChange={handleChange}
+                    placeholder="Email"
                     className="w-full border p-3 rounded-xl"
                 />
 
                 <input
                     type="text"
                     name="phone"
-                    placeholder="Phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full border p-3 rounded-xl"
-                />
-
-                <input
-                    type="text"
-                    name="company"
-                    placeholder="Company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    className="w-full border p-3 rounded-xl"
-                />
-
-                <input
-                    type="date"
-                    name="visitDate"
-                    value={formData.visitDate}
-                    onChange={handleChange}
+                    placeholder="Phone"
                     className="w-full border p-3 rounded-xl"
                 />
 
@@ -188,7 +153,7 @@ export default function EditVisitor() {
                     type="submit"
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl"
                 >
-                    Update Visitor
+                    Update Profile
                 </button>
 
             </form>

@@ -31,6 +31,16 @@ export const getUserById = async (id) => {
   return res.data;
 };
 
+export const getProfile = async () => {
+    const res = await api.get('/users/me');
+    return res.data;
+};
+
+export const updateProfile = async (data) => {
+    const res = await api.put( '/users/me', data, getAuthConfig() );
+    return res.data;
+};
+
 // POST /api/users - Create a new user profile
 export const createUser = async (data) => {
   // Axios will auto-configure multipart headers if data is an instance of FormData

@@ -114,6 +114,12 @@ const Sidebar = () => {
       path: "/logs",
       roles: ["security"],
     },
+    {
+      label: "Profile",
+      icon: User,
+      path: "/profile",
+      roles: ["security"],
+    },
     // ================= VISITOR =================
     {
       label: "Dashboard",

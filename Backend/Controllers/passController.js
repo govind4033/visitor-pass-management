@@ -86,6 +86,8 @@ exports.issuePass = async (req, res) => {
 
       qrCodeUrl: qr,
 
+      pdfFile: pdf,
+
       pdfUrl: `${process.env.BASE_URL}/uploads/${pdf}`,
 
       issuedBy: req.user._id,
@@ -97,10 +99,7 @@ exports.issuePass = async (req, res) => {
     try {
 
       if (visitor.phone) {
-        await sendSMS(
-          visitor.phone,
-          'Your visitor pass has been generated.'
-        );
+        await sendSMS(visitor.phone, 'Your visitor pass has been generated.' );
       }
 
     } catch (e) {

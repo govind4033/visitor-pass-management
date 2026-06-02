@@ -57,7 +57,7 @@ export default function Login() {
               navigate('/Visitor');
               break;
             default:
-              navigate('/dashboard'); // fallback generic path
+              navigate('/login'); // fallback generic path
           }
 
       } catch (err) {

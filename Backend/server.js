@@ -2,12 +2,11 @@
 require("dotenv").config();
 
 // Import routes
-const passRoutes = require('./Routes/passRoutes');
-const visitorRoutes = require('./Routes/visitorRoutes');
+const appointmentsRoutes = require('./Routes/apointmentRoutes');
 const authRoutes = require("./Routes/authRoutes");
 const checkRoutes = require("./Routes/checkRoutes");
+const passRoutes = require('./Routes/passRoutes');
 const reportRoutes = require('./Routes/reportRoutes');
-const appointmentsRoutes = require('./Routes/apointmentRoutes');
 const userRoutes = require("./Routes/userRoutes");
 
 // Import express, cors and morgan for method logs
@@ -34,35 +33,12 @@ app.use(morgan('dev'));
 // Allow frontend to access backend
 app.use(cors({ origin: `http://localhost:5173` }));
 
-// Test route
-app.get("/", (req, res) => {
-    console.log("ROOT HIT");
-    res.send("Server working");
-});
-
 app.use('/uploads', express.static('uploads'));
-
-// Test email setup
-app.get('/test-email', async (req, res) => {
-    try {
-        await testEmail();
-
-        res.json({
-        message: 'Email sent successfully'
-        });
-    } catch (err) {
-        res.status(500).json({
-        message: err.message
-        });
-    }
-});
 
 //Routes for auth, visitor, checklogs, reports, apointments and passes
 app.use('/api/auth', authRoutes);
 
 app.use('/api/appointments', appointmentsRoutes);
-
-app.use('/api/visitors', visitorRoutes);
 
 app.use('/api/passes', passRoutes);
 

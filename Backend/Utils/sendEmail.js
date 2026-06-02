@@ -24,7 +24,7 @@ exports.testEmail = async () => {
   });
 
 };
-
+ 
 // appointment email
 exports.sendAppointmentEmail = async (visitor, type) => {
 
@@ -72,7 +72,7 @@ exports.sendPassEmail = async (visitor, pass) => {
       {
         filename: 'visitor-pass.pdf',
 
-        path: path.join(__dirname, '../uploads', pass.pdfUrl)
+        path: path.join(__dirname, '../uploads', pass.pdfFile)
       }
     ]
   });

@@ -57,6 +57,64 @@ exports.getUserById = async (req, res) => {
     }
 };
 
+exports.getMyProfile = async (req, res) => {
+  try {
+
+    const user = await User.findById(req.user._id)
+      .select('-password');
+
+    res.status(200).json({
+      success: true,
+      data: user
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
+
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+
+    console.log(req.body);
+    console.log(req.file);
+
+    const updates = {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone
+    };
+
+    if (req.file) {
+      updates.photo = req.file.filename;
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      updates,
+      { new: true }
+    ).select('-password');
+
+    res.json({
+      success: true,
+      data: user
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      error: err.message
+    });
+  }
+};
+
 exports.updateUser = async (req, res) => {
     try {
         // Prevent password updates through this route (password updates should have a separate secure route)

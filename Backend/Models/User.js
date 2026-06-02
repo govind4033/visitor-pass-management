@@ -14,12 +14,13 @@ const userSchema = new Schema({
     },
     phone: {type: String, trim: true},
     department: {type: String, trim: true},
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
+    photo: { type: String, default: null }
 }, { timestamps: true });
 
 // Static signup method
 userSchema.statics.signup = async function (data) {
-    const { name, email, password, role, phone, department } = data;
+    const { name, email, password, role, phone, department, photo } = data;
 
     // Validate all
     if (!email || !password || !name) {
@@ -44,7 +45,7 @@ userSchema.statics.signup = async function (data) {
     const hash = await bcrypt.hash(password, salt);
 
     // Create user
-    const user = await this.create({ name, email, password: hash, role, phone, department });
+    const user = await this.create({ name, email, password: hash, role, phone, department, photo });
     return user;
 };
 
