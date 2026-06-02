@@ -31,7 +31,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 // Allow frontend to access backend
-app.use(cors({ origin: [ `http://localhost:5173`, `https://visitorpassmanagementsystem4.netlify.app/` ] }));
+app.use(cors({ origin: [ `http://localhost:5173`, `https://visitorpassmanagementsystem4.netlify.app` ] }));
 
 app.use('/uploads', express.static('uploads'));
 
