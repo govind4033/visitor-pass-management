@@ -1,5 +1,5 @@
-const Pass = require('../models/Pass');
-const User = require('../models/User');
+const Pass = require('../Models/Pass');
+const User = require('../Models/User');
 const Appointment = require('../Models/Appointment');
 const generateQR = require('../Utils/generateOR');
 const generatePDF = require('../Utils/generatePDF');
