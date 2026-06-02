@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const { checkIn, checkOut, getLogs, getPassLogs, getSecurityDashboardStats } = require('../controllers/checkController');
+const { checkIn, checkOut, getLogs, getPassLogs, getSecurityDashboardStats } = require('../Controllers/checkController');
 
 const { protect, authorize } = require('../Middleware/authMiddleware');
 

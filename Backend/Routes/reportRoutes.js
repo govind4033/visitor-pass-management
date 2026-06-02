@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const { getSummary, getDailyStats, getPeakHours, exportCSV } = require('../controllers/reportController');
+const { getSummary, getDailyStats, getPeakHours, exportCSV } = require('../Controllers/reportController');
 
 const { protect, authorize } = require('../Middleware/authMiddleware');
 
