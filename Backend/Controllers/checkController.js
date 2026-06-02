@@ -1,6 +1,6 @@
 const Pass = require('../Models/Pass');
 const User = require('../Models/User');
-const CheckLog = require('../Models/CheckLog');
+const CheckLog = require('../Models/Checklog');
 const { sendCheckinAlert } = require('../Utils/sendEmail');
 const Appointment = require('../Models/Appointment');
 
