@@ -2,7 +2,7 @@ const router = require('express').Router();
 
 const { checkIn, checkOut, getLogs, getPassLogs, getSecurityDashboardStats } = require('../controllers/checkController');
 
-const { protect, authorize } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../Middleware/authMiddleware');
 
 // all routes protected
 router.use(protect);

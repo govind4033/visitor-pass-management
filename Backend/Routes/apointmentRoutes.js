@@ -2,7 +2,7 @@ const router = require('express').Router();
 
 const { createAppointment, getAppointments, approveAppointment, rejectAppointment, cancelAppointment, completeAppointment, getAppointmentById, getVisitorOwnAppointments, getMyVisitors } = require('../Controllers/appointmentController');
 
-const { protect, authorize } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../Middleware/authMiddleware');
 
 router.use(protect);
 

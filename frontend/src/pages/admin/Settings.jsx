@@ -2,7 +2,7 @@ import React from 'react'
 
 function Settings() {
   return (
-    <div>Settings</div>
+    <div>I will implement in future</div>
   )
 }
 

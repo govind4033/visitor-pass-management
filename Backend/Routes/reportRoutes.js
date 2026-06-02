@@ -2,7 +2,7 @@ const router = require('express').Router();
 
 const { getSummary, getDailyStats, getPeakHours, exportCSV } = require('../controllers/reportController');
 
-const { protect, authorize } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../Middleware/authMiddleware');
 
 router.use(protect, authorize('admin'));
 
