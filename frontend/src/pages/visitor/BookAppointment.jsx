@@ -9,7 +9,8 @@ import {
   FileText,
   Loader2
 } from 'lucide-react';
-import api from '../../api/axios';
+import { getUsers } from '../../api/userApi';
+import { createAppointment } from '../../api/appointmentApi';
 
 export default function BookAppointment() {
   const navigate = useNavigate();
@@ -32,10 +33,10 @@ export default function BookAppointment() {
         const config = { headers: { Authorization: `Bearer ${token}` } };
         
         // Reusing your application query logic to isolate only employees
-        const res = await api.get('/users?role=employee');
+        const data = await getUsers('employee');
         
         // Handle variations in your server API wrappers safely
-        setEmployees(res.data.users || []);
+        setEmployees(data.users || []);
       } catch (error) {
         console.error(error);
         toast.error("Failed to load company host directory.");
@@ -60,7 +61,7 @@ export default function BookAppointment() {
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
       // Dispatch tracking properties straight to your controller
-      await api.post('/appointments', formData, config);
+      await createAppointment(formData);
       
       toast.success('Appointment submitted successfully!');
       navigate('/visitor');

@@ -20,6 +20,7 @@ router.get('/my-bookings', getVisitorOwnAppointments);
 
 router.get("/my-visitors", protect, authorize("employee"), getMyVisitors);
 
+// not used right know
 router.get('/:id', getAppointmentById);
 
 router.patch('/:id/approve', authorize('security', 'employee'), approveAppointment);

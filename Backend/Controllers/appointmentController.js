@@ -155,6 +155,7 @@ exports.getMyVisitors = async (req, res) => {
   }
 };
 
+// not used right know
 exports.getAppointmentById = async (req, res) => {
   try {
 

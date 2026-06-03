@@ -69,7 +69,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-900 to-blue-50 flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-sky-900 to-blue-50 flex items-center justify-center px-4 relative overflow-hidden">
 
       {/* Main Glassmorphism Card */}
       <div className="w-full max-w-md bg-white/60 backdrop-blur-xl rounded-[40px] shadow-2xl border border-white/40 p-10 relative z-10">
@@ -140,7 +140,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 rounded-2xl bg-gradient-to-b from-gray-900 to-black text-white text-lg font-semibold shadow-lg hover:scale-[1.02] active:scale-[0.98] transition disabled:opacity-50 disabled:hover:scale-100"
+            className="w-full py-4 rounded-2xl bg-linear-to-b from-gray-900 to-black text-white text-lg font-semibold shadow-lg hover:scale-[1.02] active:scale-[0.98] transition disabled:opacity-50 disabled:hover:scale-100"
           >
             {loading ? 'Authenticating...' : 'Sign In'}
           </button>

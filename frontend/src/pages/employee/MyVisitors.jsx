@@ -11,7 +11,7 @@ import {
 
 import toast from "react-hot-toast";
 
-import api from "../../api/axios";
+import { getMyVisitors } from "../../api/appointmentApi";
 
 export default function MyVisitors() {
 
@@ -29,9 +29,9 @@ export default function MyVisitors() {
 
     try {
 
-      const res = await api.get("/appointments/my-visitors");
+      const data = await getMyVisitors();
 
-      setVisitors(res.data.visitors || []);
+      setVisitors(data.visitors || []);
 
     } catch (err) {
 

@@ -15,7 +15,8 @@ export const getLogs = async (params) => {
     return res.data;
 };
 
-export const getSelectedLogs = async (date) => {
+// not used right know
+export const getPassLogs = async (date) => {
     const res = await api.get(`/check/logs/${date}`);
     return res.data;
 };

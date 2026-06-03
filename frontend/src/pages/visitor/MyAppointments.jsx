@@ -11,7 +11,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import toast from "react-hot-toast";
-import api from "../../api/axios";
+import { getVisitorOwnAppointments } from "../../api/appointmentApi";
 
 const MyAppointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -26,11 +26,11 @@ const MyAppointments = () => {
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
       // Hits your appointments tracking endpoint
-      const res = await api.get("/appointments/my-bookings", config);
+      const data = await getVisitorOwnAppointments();
       
-      if (res.data.success) {
+      if (data.success) {
         // Fallback checks matching varying array return layouts safely
-        const list = res.data.appointments || res.data.data || [];
+        const list = data.appointments || [];
         setAppointments(list);
         setError(null);
       }

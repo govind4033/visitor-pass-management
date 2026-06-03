@@ -15,7 +15,7 @@ router.post('/out/', authorize('security'), checkOut);
 // admin/security can view logs
 router.get('/logs', authorize('admin', 'security'), getLogs);
 
-// for all
+// not used right know
 router.get( '/logs/:passId', authorize('admin', 'security'), getPassLogs );
 
 router.get('/dashboard', authorize('security'), getSecurityDashboardStats);

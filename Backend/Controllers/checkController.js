@@ -179,6 +179,7 @@ exports.getLogs = async (req, res) => {
   }
 };
 
+// not used right know
 exports.getPassLogs = async (req, res) => {
   try {
 

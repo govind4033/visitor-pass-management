@@ -77,7 +77,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-900 to-blue-50 flex items-center justify-center px-4 py-8 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-sky-900 to-blue-50 flex items-center justify-center px-4 py-8 relative overflow-hidden">
       <div className="w-full max-w-xl bg-white/60 backdrop-blur-xl rounded-[40px] shadow-2xl border border-white/40 p-10 relative z-10">
         
         {/* Central Brand Icon */}

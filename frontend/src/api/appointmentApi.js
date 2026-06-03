@@ -10,8 +10,19 @@ export const getAppointments = async () => {
   return res.data;
 };
 
+// not used right know
 export const getAppointmentById = async (id) => {
   const res = await api.get(`/appointments/${id}`);
+  return res.data;
+};
+
+export const getVisitorOwnAppointments = async () => {
+  const res = await api.get('/appointments/my-bookings');
+  return res.data;
+};
+
+export const getMyVisitors = async () => {
+  const res = await api.get('/appointments/my-visitors');
   return res.data;
 };
 
