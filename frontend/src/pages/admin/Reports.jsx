@@ -157,35 +157,6 @@ export default function Reports() {
         })}
       </div>
 
-      {/* daily stats layout */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Daily Visitor Stats</h2>
-        {dailyStats.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b text-gray-500 text-sm">
-                  <th className="pb-4">Date</th>
-                  <th className="pb-4">Visitors Count</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dailyStats.map((item, index) => (
-                  <tr key={index} className="border-b last:border-none hover:bg-gray-50/50">
-                    <td className="py-4 text-gray-700">
-                      {item.date ? new Date(item.date).toLocaleDateString(undefined, { dateStyle: 'medium' }) : 'N/A'}
-                    </td>
-                    <td className="py-4 font-semibold text-gray-800">{item.count ?? item.visitors ?? 0}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="text-gray-400 py-4 italic">No daily operational statistics log items found.</div>
-        )}
-      </div>
-
       {/* peak hours charts layout */}
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Peak Visiting Hours</h2>

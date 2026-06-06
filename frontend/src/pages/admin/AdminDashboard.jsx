@@ -95,45 +95,7 @@ const AdminDashboard = () => {
         })}
       </div>
 
-      {/* Activity Table */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-gray-900">Live Registration Stream</h2>
-          </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 text-gray-400 font-medium">
-                  <th className="pb-3">Visitor</th>
-                  <th className="pb-3">Host Employee</th>
-                  <th className="pb-3">Visit Date</th>
-                  <th className="pb-3 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {recentActivities.map((act) => (
-                  <tr key={act._id} className="hover:bg-gray-50/50 transition">
-                    <td className="py-3 font-semibold text-gray-800">{act.name}</td>
-                    <td className="py-3 text-gray-600">{act.hostEmployee?.name || "N/A"}</td>
-                    <td className="py-3 text-gray-400 text-xs">{new Date(act.visitDate).toLocaleDateString()}</td>
-                    <td className="py-3 text-right">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium 
-                        ${act.status === 'checked-in' ? 'bg-green-50 text-green-700 border border-green-200' : ''}
-                        ${act.status === 'pre-registered' ? 'bg-amber-50 text-amber-700 border border-amber-200' : ''}
-                        ${act.status === 'checked-out' ? 'bg-gray-100 text-gray-700' : ''}
-                      `}>
-                        {act.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 };
